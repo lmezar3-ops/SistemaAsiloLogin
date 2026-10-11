@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "MicroservicioDonaciones.Controllers.DonacionesController",
+    "Method": "GetDonaciones",
+    "RelativePath": "api/Donaciones",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
