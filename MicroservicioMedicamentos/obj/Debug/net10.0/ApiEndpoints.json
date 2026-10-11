@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "MicroservicioMedicamentos.Controllers.MedicamentosController",
+    "Method": "GetMedicamentosPorVencer",
+    "RelativePath": "api/Medicamentos/vencer",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
