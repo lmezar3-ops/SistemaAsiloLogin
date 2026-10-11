@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "MicroservicioAncianos.Controllers.AncianosController",
+    "Method": "GetAncianos",
+    "RelativePath": "api/Ancianos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MicroservicioAncianos.Controllers.AncianosController",
+    "Method": "RegistrarAnciano",
+    "RelativePath": "api/Ancianos",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nuevoAnciano",
+        "Type": "MicroservicioAncianos.Controllers.Anciano",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
