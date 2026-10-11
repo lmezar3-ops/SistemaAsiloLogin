@@ -1,0 +1,6 @@
+@MicroservicioDonaciones_HostAddress = https://localhost:7126
+
+GET {{MicroservicioDonaciones_HostAddress}}/api/Donaciones
+Accept: application/json
+
+###
