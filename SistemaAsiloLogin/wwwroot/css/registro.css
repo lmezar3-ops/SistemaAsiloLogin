@@ -1,0 +1,76 @@
+﻿
+body {
+    background-color: #eef3ef;
+    font-family: Arial, sans-serif;
+    color: #394943;
+}
+
+.registro-container {
+    display: flex;
+    justify-content: center;
+    margin-top: center;
+    min-height: 75vh;
+}
+
+.registro-box {
+    background-color: #ffffff;
+    border: 1px solid #d5e0d9;
+    padding: 35px;
+    width: 380px;
+    border-radius: 16px;
+    box-shadow: 0px 8px 25px rgba(70, 90, 80, 0.15);
+}
+
+    .registro-box h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #496b5a;
+        font-size: 28px;
+    }
+
+    .registro-box label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 6px;
+        font-weight: bold;
+        color: #4d5d57;
+    }
+
+    .registro-box input {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #cbd8d0;
+        border-radius: 8px;
+        background-color: #f8faf8;
+        font-size: 15px;
+        outline: none;
+    }
+
+        .registro-box input:focus {
+            border-color: #7da58c;
+            box-shadow: 0px 0px 5px rgba(125, 165, 140, 0.3);
+        }
+
+    .registro-box button {
+        width: 100%;
+        margin-top: 25px;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background-color: #6f927d;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+        .registro-box button:hover {
+            background-color: #5d806b;
+        }
+
+#mensaje {
+    margin-top: 18px;
+    text-align: center;
+    font-weight: bold;
+}

@@ -1,0 +1,74 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.RegistroAncianosModel
+@{
+    ViewData["Title"] = "Registro de Pacientes";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/registro.css" />
+}
+
+<div class="registro-container">
+
+    <div class="registro-box">
+
+        <h1>Registro de Pacientes</h1>
+
+        <label>Nombres</label>
+        <input type="text" id="nombres">
+
+        <label>Apellidos</label>
+        <input type="text" id="apellidos">
+
+        <label>Fecha de nacimiento</label>
+        <input type="date" id="fechaNacimiento">
+
+        <div class="form-group"> 
+        <label for="dpi">DPI del paciente</label>
+        <input
+            type="text" 
+            id="dpi" 
+            name="dpi"
+            maxlength="13"
+            minlength="13" 
+            inputmode="numeric"
+            pattern="[0-9]{13}"
+            autocomplete="off"
+            placeholder="Ingrese los 13 dígitos del DPI" required /> 
+        </div>
+
+        <label>Sexo</label>
+        <select id="sexo">
+            <option value="">Seleccione...</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+        </select>
+
+        <label>Dirección</label>
+        <input type="text" id="direccion">
+
+        <label>Teléfono</label>
+        <input type="text" id="telefono">
+
+        <label>Fecha de ingreso</label>
+        <input type="date" id="fechaIngreso">
+
+        <label>Estado</label>
+        <select id="estado">
+            <option value="1">Activo</option>
+            <option value="0">Inactivo</option>
+        </select>
+
+        <button onclick="registrarAnciano()">
+            Guardar Paciente
+        </button>
+
+        <p id="mensaje"></p>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/registro.js"></script>
+}

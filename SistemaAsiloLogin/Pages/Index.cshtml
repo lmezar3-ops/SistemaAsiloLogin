@@ -1,0 +1,43 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio de sesión";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+<div class="login-container">
+
+    <div class="login-box">
+
+        <h1>Sistema del Asilo</h1>
+
+        <label>Usuario</label>
+        <input type="text" id="usuario">
+
+        <label>Contraseña</label>
+
+        <div class="password-container">
+            <input type="password" id="password">
+
+            <button type="button"
+                    id="togglePassword"
+                    class="toggle-password"
+                    onclick="mostrarOcultarPassword()">
+                👁️
+            </button>
+        </div>
+
+        <button onclick="iniciarSesion()">Iniciar Sesión</button>
+
+        <p id="mensaje"></p>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/login.js"></script>
+}

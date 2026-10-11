@@ -1,0 +1,171 @@
+﻿@page
+@model SolicitudesMedicasModel
+
+@{
+    ViewData["Title"] = "Solicitudes Médicas";
+}
+
+<h2>Solicitudes Médicas</h2>
+
+<form method="post">
+
+    <div class="solicitud-form">
+
+        <div>
+            <label>Paciente</label>
+
+            <select asp-for="Solicitud.IdPaciente">
+                <option value="">Seleccione un paciente</option>
+
+                @foreach (var paciente in Model.Pacientes)
+                {
+                    <option value="@paciente.IdPaciente">
+                        @paciente.Nombres @paciente.Apellidos
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label>Médico General</label>
+
+            <select asp-for="Solicitud.IdMedicoGeneral">
+                <option value="">Seleccione un médico</option>
+
+                @foreach (var medico in Model.Medicos)
+                {
+                    <option value="@medico.IdMedico">
+                        @medico.Nombres @medico.Apellidos
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label>Especialidad</label>
+
+            <select asp-for="Solicitud.IdEspecialidad">
+                <option value="">Seleccione una especialidad</option>
+
+                @foreach (var especialidad in Model.Especialidades)
+                {
+                    <option value="@especialidad.IdEspecialidad">
+                        @especialidad.Nombre
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label>Enfermero</label>
+
+            <select asp-for="Solicitud.IdEnfermero">
+                <option value="">Sin enfermero asignado</option>
+
+                @foreach (var enfermero in Model.Enfermeros)
+                {
+                    <option value="@enfermero.IdEnfermero">
+                        @enfermero.Nombres @enfermero.Apellidos
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label>Fecha de solicitud</label>
+
+            <input asp-for="Solicitud.FechaSolicitud"
+                   type="datetime-local" />
+        </div>
+
+        <div>
+            <label>Motivo</label>
+
+            <textarea asp-for="Solicitud.Motivo"
+                      rows="4"
+                      placeholder="Ingrese el motivo de la solicitud médica"></textarea>
+        </div>
+
+        <div>
+            <label>Estado</label>
+
+            <select asp-for="Solicitud.Estado">
+                <option value="Pendiente">Pendiente</option>
+            </select>
+        </div>
+
+        <button type="submit">
+            Registrar Solicitud
+        </button>
+
+    </div>
+
+</form>
+
+
+<h3>Solicitudes Registradas</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Médico General</th>
+            <th>Especialidad</th>
+            <th>Enfermero</th>
+            <th>Fecha</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var solicitud in Model.Solicitudes)
+        {
+            <tr>
+                <td>@solicitud.IdSolicitud</td>
+
+                <td>
+                    @solicitud.Paciente?.Nombres
+                    @solicitud.Paciente?.Apellidos
+                </td>
+
+                <td>
+                    @solicitud.MedicoGeneral?.Nombres
+                    @solicitud.MedicoGeneral?.Apellidos
+                </td>
+
+                <td>
+                    @solicitud.Especialidad?.Nombre
+                </td>
+
+                <td>
+                    @if (solicitud.Enfermero != null)
+                    {
+                        @solicitud.Enfermero.Nombres
+                        @solicitud.Enfermero.Apellidos
+                    }
+                    else
+                    {
+                        <span>Sin asignar</span>
+                    }
+                </td>
+
+                <td>
+                    @solicitud.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")
+                </td>
+
+                <td>
+                    @solicitud.Motivo
+                </td>
+
+                <td>
+                    @solicitud.Estado
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+```

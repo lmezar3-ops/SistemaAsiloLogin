@@ -1,0 +1,153 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Menú Principal";
+}
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+
+<div class="container mt-4">
+
+    <h1>Menú Principal - Sistema del Asilo</h1>
+    <hr />
+
+    <div class="row">
+
+        <!-- Gestión de Pacientes -->
+        <div class="col-md-4 mb-3">
+            <a href="/RegistroAncianos" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>👴 Gestión de Pacientes</h3>
+                    <p>Administración de pacientes.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Solicitudes Médicas -->
+        <div class="col-md-4 mb-3">
+            <a href="/SolicitudesMedicas" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>📋 Solicitudes Médicas</h3>
+                    <p>Registro y control de solicitudes de atención médica.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Citas Médicas -->
+        <div class="col-md-4 mb-3">
+            <a href="/CitasMedicas" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>🗓️ Citas Médicas</h3>
+                    <p>Programación y control de citas médicas.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Visitas Médicas -->
+        <div class="col-md-4 mb-3">
+            <a href="/VisitasMedicas" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>🩺 Visitas Médicas</h3>
+                    <p>Consultas, diagnósticos y expedientes médicos.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Laboratorio -->
+        <div class="col-md-4 mb-3">
+            <a href="/ExamenesLaboratorio" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>🧪 Laboratorio</h3>
+                    <p>Exámenes y resultados médicos.</p>
+                </div>
+            </a>
+        </div>
+
+
+        <!-- Farmacia -->
+        <div class="col-md-4 mb-3">
+            <a href="/Medicamentos" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>💊 Farmacia</h3>
+                    <p>Gestión y control de medicamentos.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Donaciones -->
+        <div class="col-md-4 mb-3">
+            <a href="/Donaciones" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>💰 Donaciones</h3>
+                    <p>Registro y gestión de donaciones.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Caja y Pagos -->
+        <div class="col-md-4 mb-3">
+            <a href="#" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>💵 Caja y Pagos</h3>
+                    <p>Control de pagos, ingresos y egresos.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Reportes -->
+        <div class="col-md-4 mb-3">
+            <a href="#" style="text-decoration: none; color: inherit;">
+                <div class="dashboard-card">
+                    <h3>📊 Reportes</h3>
+                    <p>Informes y consultas del sistema.</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Cerrar Sesión -->
+    <div class="text-center mt-4">
+        <button type="button"
+        class="btn btn-danger"
+        onclick="cerrarSesion()">
+    🚪 Cerrar Sesión
+</button>
+    </div>
+
+</div>
+
+@section Scripts {
+
+<script>
+
+async function cerrarSesion() {
+
+    try {
+
+        const respuesta = await fetch('/api/Logout', {
+            method: 'POST'
+        });
+
+        if (respuesta.ok) {
+
+            window.location.href = "/";
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+</script>
+
+}

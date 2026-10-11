@@ -1,0 +1,116 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.CuotasFamiliaresModel
+
+@{
+    ViewData["Title"] = "Cuotas Familiares";
+}
+
+<h2>Cuotas Familiares</h2>
+
+<form method="post">
+
+    <div>
+        <label>Paciente</label>
+
+        <select asp-for="Cuota.IdPaciente">
+
+            <option value="">
+                Seleccione un paciente
+            </option>
+
+            @foreach (var paciente in Model.Pacientes)
+            {
+                <option value="@paciente.IdPaciente">
+                    @paciente.Nombres @paciente.Apellidos
+                </option>
+            }
+
+        </select>
+    </div>
+
+    <div>
+        <label>Fecha de la cuota</label>
+
+        <input asp-for="Cuota.FechaCuota"
+               type="date" />
+    </div>
+
+    <div>
+        <label>Monto</label>
+
+        <input asp-for="Cuota.Monto"
+               type="number"
+               step="0.01" />
+    </div>
+
+    <div>
+        <label>Estado</label>
+
+        <select asp-for="Cuota.Estado">
+
+            <option value="Pendiente">
+                Pendiente
+            </option>
+
+            <option value="Pagada">
+                Pagada
+            </option>
+
+        </select>
+    </div>
+
+    <button type="submit">
+        Registrar Cuota
+    </button>
+
+</form>
+
+<hr />
+
+<h3>Cuotas Registradas</h3>
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Fecha</th>
+            <th>Monto</th>
+            <th>Estado</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var cuota in Model.Cuotas)
+        {
+            <tr>
+
+                <td>@cuota.IdCuota</td>
+
+                <td>
+                    @cuota.Paciente?.Nombres
+                    @cuota.Paciente?.Apellidos
+                </td>
+
+                <td>
+                    @cuota.FechaCuota.ToString("dd/MM/yyyy")
+                </td>
+
+                <td>
+                    Q @cuota.Monto
+                </td>
+
+                <td>
+                    @cuota.Estado
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

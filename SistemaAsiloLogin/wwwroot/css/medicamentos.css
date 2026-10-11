@@ -1,0 +1,20 @@
+﻿.tabla-medicamentos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .tabla-medicamentos th,
+    .tabla-medicamentos td {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        text-align: left;
+    }
+
+    .tabla-medicamentos th {
+        background-color: #f2f4f7;
+    }
+
+.estado-consulta {
+    margin-top: 10px;
+    color: #495057;
+}

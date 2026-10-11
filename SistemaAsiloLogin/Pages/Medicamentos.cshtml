@@ -1,0 +1,45 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.MedicamentosModel
+@{
+    ViewData["Title"] = "Medicamentos";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/medicamentos.css" />
+}
+
+<div class="mb-3">
+    <button class="btn btn-primary me-2"
+            onclick="cargarInventario()">
+        Consultar inventario completo
+    </button>
+
+    <button class="btn btn-warning"
+            onclick="cargarMedicamentos()">
+        Consultar próximos a vencer
+    </button>
+</div>
+
+ <table class="table table-bordered tabla-medicamentos">
+
+    <thead>
+          <tr>
+        <th>ID</th>
+        <th>Medicamento</th>
+        <th>Descripción</th>
+        <th>Existencia</th>
+        <th>Fecha de vencimiento</th>
+        <th>Costo</th>
+        <th>Estado</th>
+    </tr>
+</thead>
+<tbody id="tablaMedicamentos">
+</tbody>
+
+    </table>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/medicamentos.js"></script>
+}

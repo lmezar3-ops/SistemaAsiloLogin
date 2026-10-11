@@ -1,0 +1,268 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.PagosPacienteModel
+
+@{
+    ViewData["Title"] = "Pagos de Pacientes";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Pagos de Pacientes</h2>
+            <p class="text-muted">
+                Registro y consulta de pagos realizados.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- REGISTRAR PAGO -->
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Registrar pago</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NuevoPago.IdCargo" class="form-label">
+                            Cargo
+                        </label>
+
+                        <select asp-for="NuevoPago.IdCargo" class="form-select">
+                            <option value="">-- Seleccionar cargo --</option>
+
+                            @foreach (var cargo in Model.CargosPendientes)
+                            {
+                                <option value="@cargo.IdCargo">
+                                    Cargo #@cargo.IdCargo -
+                                    Paciente #@cargo.IdPaciente -
+                                    @cargo.Concepto -
+                                    Q @cargo.MontoFinal
+                                </option>
+                            }
+                        </select>
+
+                        <small class="text-muted">
+                            Selecciona un cargo si el pago corresponde a un cargo del paciente.
+                        </small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NuevoPago.IdCuota" class="form-label">
+                            Cuota familiar
+                        </label>
+
+                        <select asp-for="NuevoPago.IdCuota" class="form-select">
+                            <option value="">-- Seleccionar cuota --</option>
+
+                            @foreach (var cuota in Model.CuotasPendientes)
+                            {
+                                <option value="@cuota.IdCuota">
+                                    Cuota #@cuota.IdCuota -
+                                    Paciente #@cuota.IdPaciente -
+                                    @cuota.FechaCuota.ToString("dd/MM/yyyy") -
+                                    Q @cuota.Monto
+                                </option>
+                            }
+                        </select>
+
+                        <small class="text-muted">
+                            Selecciona una cuota si el pago corresponde a una cuota familiar.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="NuevoPago.FechaPago" class="form-label">
+                            Fecha de pago
+                        </label>
+
+                        <input asp-for="NuevoPago.FechaPago"
+                               type="datetime-local"
+                               class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="NuevoPago.MontoPagado" class="form-label">
+                            Monto pagado
+                        </label>
+
+                        <input asp-for="NuevoPago.MontoPagado"
+                               type="number"
+                               step="0.01"
+                               min="0.01"
+                               class="form-control"
+                               placeholder="0.00" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="NuevoPago.MetodoPago" class="form-label">
+                            Método de pago
+                        </label>
+
+                        <select asp-for="NuevoPago.MetodoPago" class="form-select">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoPago.Observaciones" class="form-label">
+                        Observaciones
+                    </label>
+
+                    <textarea asp-for="NuevoPago.Observaciones"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Observaciones del pago..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Registrar pago
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- HISTORIAL DE PAGOS -->
+
+    <div class="card">
+
+        <div class="card-header">
+            <h5 class="mb-0">Historial de pagos</h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Pagos.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-striped align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Referencia</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var pago in Model.Pagos)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @pago.IdPago
+                                    </td>
+
+                                    <td>
+                                        @pago.FechaPago.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @if (pago.IdCargo.HasValue)
+                                        {
+                                            <span>Cargo</span>
+                                        }
+                                        else if (pago.IdCuota.HasValue)
+                                        {
+                                            <span>Cuota familiar</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Sin referencia</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (pago.IdCargo.HasValue)
+                                        {
+                                            <span>
+                                                Cargo #@pago.IdCargo
+                                            </span>
+                                        }
+                                        else if (pago.IdCuota.HasValue)
+                                        {
+                                            <span>
+                                                Cuota #@pago.IdCuota
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        Q @pago.MontoPagado.ToString("N2")
+                                    </td>
+
+                                    <td>
+                                        @pago.MetodoPago
+                                    </td>
+
+                                    <td>
+                                        @pago.Observaciones
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No existen pagos registrados.
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>

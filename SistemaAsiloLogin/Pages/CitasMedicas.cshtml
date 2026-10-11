@@ -1,0 +1,159 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.CitasMedicasModel
+
+@{
+    ViewData["Title"] = "Citas Médicas";
+}
+
+<h2>Citas Médicas</h2>
+
+<form method="post">
+
+    <div>
+
+        <label>Solicitud Médica</label>
+
+        <select asp-for="Cita.IdSolicitud">
+            <option value="">Seleccione una solicitud</option>
+
+            @foreach (var solicitud in Model.Solicitudes)
+            {
+                <option value="@solicitud.IdSolicitud">
+                    Solicitud #@solicitud.IdSolicitud -
+                    @solicitud.Paciente?.Nombres
+                    @solicitud.Paciente?.Apellidos
+                    -
+                    @solicitud.Especialidad?.Nombre
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Médico</label>
+
+        <select asp-for="Cita.IdMedico">
+            <option value="">Seleccione un médico</option>
+
+            @foreach (var medico in Model.Medicos)
+            {
+                <option value="@medico.IdMedico">
+                    @medico.Nombres @medico.Apellidos
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Fecha y hora de la cita</label>
+
+        <input asp-for="Cita.FechaCita"
+               type="datetime-local" />
+
+    </div>
+
+    <div>
+
+        <label>Estado</label>
+
+        <select asp-for="Cita.Estado">
+
+            <option value="Programada">
+                Programada
+            </option>
+
+            <option value="Atendida">
+                Atendida
+            </option>
+
+            <option value="Cancelada">
+                Cancelada
+            </option>
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Observaciones</label>
+
+        <textarea asp-for="Cita.Observaciones"
+                  rows="4"
+                  placeholder="Ingrese observaciones de la cita"></textarea>
+
+    </div>
+
+    <button type="submit">
+        Registrar Cita
+    </button>
+
+</form>
+
+
+<h3>Citas Registradas</h3>
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>ID</th>
+            <th>Solicitud</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Observaciones</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var cita in Model.Citas)
+        {
+            <tr>
+
+                <td>
+                    @cita.IdCita
+                </td>
+
+                <td>
+                    @cita.IdSolicitud
+                </td>
+
+                <td>
+                    @cita.SolicitudMedica?.Paciente?.Nombres
+                    @cita.SolicitudMedica?.Paciente?.Apellidos
+                </td>
+
+                <td>
+                    @cita.Medico?.Nombres
+                    @cita.Medico?.Apellidos
+                </td>
+
+                <td>
+                    @cita.FechaCita.ToString("dd/MM/yyyy HH:mm")
+                </td>
+
+                <td>
+                    @cita.Estado
+                </td>
+
+                <td>
+                    @cita.Observaciones
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

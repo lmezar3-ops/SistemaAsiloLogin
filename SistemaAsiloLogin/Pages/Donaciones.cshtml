@@ -1,0 +1,250 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.DonacionesModel
+@{
+ViewData["Title"] = "Donaciones";
+}
+
+<div class="container mt-4">
+
+```
+<h1>Gestión de Donaciones</h1>
+
+<p class="text-muted">
+    Registro y consulta de donaciones recibidas por el asilo.
+</p>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Mensaje"]
+    </div>
+}
+
+    @if (TempData["ErrorApi"] is string errorApi)
+    {
+        <div class="alert alert-warning" role="alert">
+            @errorApi
+        </div>
+    }
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Registrar Donación</h5>
+    </div>
+
+    <div class="card-body">
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NuevaDonacion.IdDonante"
+                           class="form-label">
+                        Donante
+                    </label>
+
+                    <select asp-for="NuevaDonacion.IdDonante"
+                            class="form-select">
+
+                        <option value="0">
+                            -- Seleccione un donante --
+                        </option>
+
+                        @foreach (var donante in Model.Donantes)
+                        {
+                            <option value="@donante.IdDonante">
+                                @donante.Nombre - @donante.TipoDonante
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="NuevaDonacion.IdDonante"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NuevaDonacion.FechaDonacion"
+                           class="form-label">
+                        Fecha de Donación
+                    </label>
+
+                    <input asp-for="NuevaDonacion.FechaDonacion"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="NuevaDonacion.FechaDonacion"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NuevaDonacion.TipoDonacion"
+                           class="form-label">
+                        Tipo de Donación
+                    </label>
+
+                    <select asp-for="NuevaDonacion.TipoDonacion"
+        class="form-select">
+
+                <option value="">
+              -- Seleccione un tipo --
+             </option>
+
+          <option value="General">
+                General
+           </option>
+
+          <option value="Medicamentos">
+              Medicamentos
+          </option>
+
+          <option value="Equipo">
+                Equipo
+          </option>
+
+          <option value="Otro">
+                Otro
+          </option>
+
+</select> 
+
+                    <span asp-validation-for="NuevaDonacion.TipoDonacion"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NuevaDonacion.Monto"
+                           class="form-label">
+                        Monto
+                    </label>
+
+                    <input asp-for="NuevaDonacion.Monto"
+                           type="number"
+                           step="0.01"
+                           min="0.01"
+                           class="form-control"
+                           placeholder="Ingrese el monto" />
+
+                    <span asp-validation-for="NuevaDonacion.Monto"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label asp-for="NuevaDonacion.Descripcion"
+                           class="form-label">
+                        Descripción
+                    </label>
+
+                    <textarea asp-for="NuevaDonacion.Descripcion"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Descripción de la donación (opcional)">
+                    </textarea>
+
+                    <span asp-validation-for="NuevaDonacion.Descripcion"
+                          class="text-danger">
+                    </span>
+                </div>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Registrar Donación
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+
+<div class="card">
+
+    <div class="card-header">
+        <h5 class="mb-0">Donaciones Registradas</h5>
+    </div>
+
+    <div class="card-body">
+
+        @if (Model.Donaciones.Count == 0)
+        {
+            <div class="alert alert-info">
+                No hay donaciones registradas actualmente.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Donante</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Monto</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var donacion in Model.Donaciones)
+                        {
+                            <tr>
+                                <td>
+                                    @donacion.IdDonacion
+                                </td>
+
+                                <td>
+                                    @donacion.Donante
+                                </td>
+
+                                <td>
+                                    @donacion.TipoDonacion
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(donacion.Descripcion)
+                                        ? "Sin descripción"
+                                        : donacion.Descripcion)
+                                </td>
+
+                                <td>
+                                    Q @donacion.Monto.ToString("N2")
+                                </td>
+
+                                <td>
+                                    @donacion.FechaDonacion.ToString("dd/MM/yyyy")
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+```
+
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" />
+}

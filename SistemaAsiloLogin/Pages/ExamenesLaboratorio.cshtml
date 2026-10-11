@@ -1,0 +1,131 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.ExamenesLaboratorioModel
+
+@{
+    ViewData["Title"] = "Exámenes de Laboratorio";
+}
+
+<h2>Exámenes de Laboratorio</h2>
+
+<form method="post">
+
+    <div>
+
+        <label>Visita Médica</label>
+
+        <select asp-for="Examen.IdVisita">
+
+            <option value="">Seleccione una visita</option>
+
+            @foreach (var visita in Model.Visitas)
+            {
+                <option value="@visita.IdVisita">
+                    Visita #@visita.IdVisita -
+                    @visita.Paciente?.Nombres
+                    @visita.Paciente?.Apellidos
+                    -
+                    @visita.Medico?.Nombres
+                    @visita.Medico?.Apellidos
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Nombre del examen</label>
+
+        <input asp-for="Examen.NombreExamen"
+               placeholder="Ejemplo: Hemograma Completo" />
+
+    </div>
+
+    <div>
+
+        <label>Fecha de solicitud</label>
+
+        <input asp-for="Examen.FechaSolicitud"
+               type="datetime-local" />
+
+    </div>
+
+    <div>
+
+        <label>Estado</label>
+
+        <select asp-for="Examen.Estado">
+
+            <option value="Pendiente">Pendiente</option>
+            <option value="Realizado">Realizado</option>
+            <option value="Cancelado">Cancelado</option>
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Costo</label>
+
+        <input asp-for="Examen.Costo"
+               type="number"
+               step="0.01" />
+
+    </div>
+
+    <button type="submit">
+        Registrar Examen
+    </button>
+
+</form>
+
+<hr />
+
+
+<a href="/ResultadosExamen">
+    Registrar Resultados de Exámenes
+</a>
+
+<hr />
+
+<h3>Exámenes Registrados</h3>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Visita</th>
+            <th>Examen</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Costo</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var examen in Model.Examenes)
+        {
+            <tr>
+
+                <td>@examen.IdExamen</td>
+
+                <td>@examen.IdVisita</td>
+
+                <td>@examen.NombreExamen</td>
+
+                <td>@examen.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</td>
+
+                <td>@examen.Estado</td>
+
+                <td>@examen.Costo</td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

@@ -1,0 +1,421 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.EstadoCuentaPacienteModel
+
+@{
+    ViewData["Title"] = "Estado de Cuenta";
+}
+
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2>Estado de Cuenta del Paciente</h2>
+        <p class="text-muted">
+            Consulta de cargos, cuotas, pagos y saldos pendientes.
+        </p>
+    </div>
+
+    <!-- SELECCIÓN DEL PACIENTE -->
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Seleccionar paciente</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row align-items-end">
+
+                    <div class="col-md-8">
+
+                        <label asp-for="IdPaciente" class="form-label">
+                            Paciente
+                        </label>
+
+                        <select asp-for="IdPaciente"
+                                class="form-select">
+
+                            <option value="">
+                                -- Seleccionar paciente --
+                            </option>
+
+                            @foreach (var paciente in Model.Pacientes)
+                            {
+                                <option value="@paciente.IdPaciente">
+                                    @paciente.Nombres @paciente.Apellidos
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Consultar estado de cuenta
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    @if (Model.PacienteSeleccionado != null)
+    {
+
+        <!-- INFORMACIÓN DEL PACIENTE -->
+
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <h5 class="mb-0">Información del paciente</h5>
+            </div>
+
+            <div class="card-body">
+
+                <h4>
+                    @Model.PacienteSeleccionado.Nombres
+                    @Model.PacienteSeleccionado.Apellidos
+                </h4>
+
+                <p class="mb-0">
+                    <strong>ID:</strong>
+                    @Model.PacienteSeleccionado.IdPaciente
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESUMEN FINANCIERO -->
+
+        <div class="row mb-4">
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <h6 class="text-muted">
+                            Total adeudado
+                        </h6>
+
+                        <h3>
+                            Q @Model.TotalAdeudado.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <h6 class="text-muted">
+                            Total pagado
+                        </h6>
+
+                        <h3>
+                            Q @Model.TotalPagado.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <h6 class="text-muted">
+                            Saldo pendiente
+                        </h6>
+
+                        <h3>
+                            Q @Model.SaldoPendiente.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CARGOS -->
+
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <h5 class="mb-0">Cargos del paciente</h5>
+            </div>
+
+            <div class="card-body">
+
+                @if (Model.Cargos.Any())
+                {
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped">
+
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th>Total</th>
+                                    <th>Abonado</th>
+                                    <th>Saldo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var cargo in Model.Cargos)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @cargo.Id
+                                        </td>
+
+                                        <td>
+                                            @cargo.Fecha.ToString("dd/MM/yyyy")
+                                        </td>
+
+                                        <td>
+                                            @cargo.Concepto
+                                        </td>
+
+                                        <td>
+                                            Q @cargo.Total.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            Q @cargo.Pagado.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            Q @cargo.Saldo.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            @cargo.Estado
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        Este paciente no tiene cargos registrados.
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- CUOTAS -->
+
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <h5 class="mb-0">Cuotas familiares</h5>
+            </div>
+
+            <div class="card-body">
+
+                @if (Model.Cuotas.Any())
+                {
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped">
+
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th>Total</th>
+                                    <th>Abonado</th>
+                                    <th>Saldo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var cuota in Model.Cuotas)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @cuota.Id
+                                        </td>
+
+                                        <td>
+                                            @cuota.Fecha.ToString("dd/MM/yyyy")
+                                        </td>
+
+                                        <td>
+                                            @cuota.Concepto
+                                        </td>
+
+                                        <td>
+                                            Q @cuota.Total.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            Q @cuota.Pagado.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            Q @cuota.Saldo.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            @cuota.Estado
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        Este paciente no tiene cuotas familiares registradas.
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- HISTORIAL DE PAGOS -->
+
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <h5 class="mb-0">Historial de pagos</h5>
+            </div>
+
+            <div class="card-body">
+
+                @if (Model.HistorialPagos.Any())
+                {
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped">
+
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Referencia</th>
+                                    <th>Monto</th>
+                                    <th>Método</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var pago in Model.HistorialPagos)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @pago.IdPago
+                                        </td>
+
+                                        <td>
+                                            @pago.FechaPago.ToString("dd/MM/yyyy HH:mm")
+                                        </td>
+
+                                        <td>
+                                            @pago.Referencia
+                                        </td>
+
+                                        <td>
+                                            Q @pago.Monto.ToString("N2")
+                                        </td>
+
+                                        <td>
+                                            @pago.MetodoPago
+                                        </td>
+
+                                        <td>
+                                            @pago.Observaciones
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        Este paciente todavía no tiene pagos registrados.
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    }
+
+</div>

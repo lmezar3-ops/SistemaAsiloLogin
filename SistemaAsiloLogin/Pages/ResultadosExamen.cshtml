@@ -1,0 +1,116 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.ResultadosExamenModel
+
+@{
+    ViewData["Title"] = "Resultados de Exámenes";
+}
+
+<h2>Resultados de Exámenes</h2>
+
+<form method="post">
+
+    <div>
+
+        <label>Examen</label>
+
+        <select asp-for="Resultado.IdExamen">
+
+            <option value="">Seleccione un examen</option>
+
+            @foreach (var examen in Model.Examenes)
+            {
+                <option value="@examen.IdExamen">
+                    Examen #@examen.IdExamen -
+                    @examen.NombreExamen
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Resultado</label>
+
+        <textarea asp-for="Resultado.Resultado"
+                  rows="5"
+                  placeholder="Ingrese el resultado del examen"></textarea>
+
+    </div>
+
+    <div>
+
+        <label>Fecha del resultado</label>
+
+        <input asp-for="Resultado.FechaResultado"
+               type="datetime-local" />
+
+    </div>
+
+    <div>
+
+        <label>Observaciones</label>
+
+        <textarea asp-for="Resultado.Observaciones"
+                  rows="4"
+                  placeholder="Ingrese observaciones del resultado"></textarea>
+
+    </div>
+
+    <button type="submit">
+        Registrar Resultado
+    </button>
+
+</form>
+
+<hr />
+
+<h3>Resultados Registrados</h3>
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>ID</th>
+            <th>Examen</th>
+            <th>Resultado</th>
+            <th>Fecha</th>
+            <th>Observaciones</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var resultado in Model.Resultados)
+        {
+            <tr>
+
+                <td>
+                    @resultado.IdResultado
+                </td>
+
+                <td>
+                    @resultado.ExamenLaboratorio?.NombreExamen
+                </td>
+
+                <td>
+                    @resultado.Resultado
+                </td>
+
+                <td>
+                    @resultado.FechaResultado.ToString("dd/MM/yyyy HH:mm")
+                </td>
+
+                <td>
+                    @resultado.Observaciones
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

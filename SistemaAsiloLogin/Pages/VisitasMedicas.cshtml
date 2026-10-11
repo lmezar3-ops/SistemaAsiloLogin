@@ -1,0 +1,187 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.VisitasMedicasModel
+
+@{
+    ViewData["Title"] = "Visitas Médicas";
+}
+
+<h2>Visitas Médicas</h2>
+
+<form method="post">
+
+    <div>
+
+        <label>Cita Médica</label>
+
+        <select asp-for="Visita.IdCita">
+            <option value="">Seleccione una cita</option>
+
+            @foreach (var cita in Model.Citas)
+            {
+                <option value="@cita.IdCita">
+                    Cita #@cita.IdCita -
+                    @cita.SolicitudMedica?.Paciente?.Nombres
+                    @cita.SolicitudMedica?.Paciente?.Apellidos
+                    -
+                    @cita.Medico?.Nombres
+                    @cita.Medico?.Apellidos
+                    -
+                    @cita.FechaCita.ToString("dd/MM/yyyy HH:mm")
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Paciente</label>
+
+        <select asp-for="Visita.IdPaciente">
+
+            <option value="">Seleccione un paciente</option>
+
+            @foreach (var cita in Model.Citas)
+            {
+                <option value="@cita.SolicitudMedica?.IdPaciente">
+                    @cita.SolicitudMedica?.Paciente?.Nombres
+                    @cita.SolicitudMedica?.Paciente?.Apellidos
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Médico</label>
+
+        <select asp-for="Visita.IdMedico">
+
+            <option value="">Seleccione un médico</option>
+
+            @foreach (var cita in Model.Citas)
+            {
+                <option value="@cita.IdMedico">
+                    @cita.Medico?.Nombres
+                    @cita.Medico?.Apellidos
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+    <div>
+
+        <label>Fecha de visita</label>
+
+        <input asp-for="Visita.FechaVisita"
+               type="datetime-local" />
+
+    </div>
+
+    <div>
+
+        <label>Motivo de consulta</label>
+
+        <textarea asp-for="Visita.MotivoConsulta"
+                  rows="4"
+                  placeholder="Ingrese el motivo de la consulta"></textarea>
+
+    </div>
+
+    <div>
+
+        <label>Diagnóstico</label>
+
+        <textarea asp-for="Visita.Diagnostico"
+                  rows="4"
+                  placeholder="Ingrese el diagnóstico"></textarea>
+
+    </div>
+
+    <div>
+
+        <label>Observaciones</label>
+
+        <textarea asp-for="Visita.Observaciones"
+                  rows="4"
+                  placeholder="Ingrese observaciones médicas"></textarea>
+
+    </div>
+
+    <button type="submit">
+        Registrar Visita
+    </button>
+
+</form>
+
+
+<h3>Visitas Registradas</h3>
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>ID</th>
+            <th>Cita</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Fecha</th>
+            <th>Motivo</th>
+            <th>Diagnóstico</th>
+            <th>Observaciones</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var visita in Model.Visitas)
+        {
+            <tr>
+
+                <td>
+                    @visita.IdVisita
+                </td>
+
+                <td>
+                    @visita.IdCita
+                </td>
+
+                <td>
+                    @visita.Paciente?.Nombres
+                    @visita.Paciente?.Apellidos
+                </td>
+
+                <td>
+                    @visita.Medico?.Nombres
+                    @visita.Medico?.Apellidos
+                </td>
+
+                <td>
+                    @visita.FechaVisita.ToString("dd/MM/yyyy HH:mm")
+                </td>
+
+                <td>
+                    @visita.MotivoConsulta
+                </td>
+
+                <td>
+                    @visita.Diagnostico
+                </td>
+
+                <td>
+                    @visita.Observaciones
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

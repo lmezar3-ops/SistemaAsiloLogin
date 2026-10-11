@@ -1,0 +1,215 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.CargosPacienteModel
+
+@{
+    ViewData["Title"] = "Cargos de Pacientes";
+}
+
+<h2>Cargos de Pacientes</h2>
+
+<form method="post">
+
+    <div>
+        <label>Paciente</label>
+
+        <select asp-for="Cargo.IdPaciente">
+            <option value="">Seleccione un paciente</option>
+
+            @foreach (var paciente in Model.Pacientes)
+            {
+                <option value="@paciente.IdPaciente">
+                    @paciente.Nombres @paciente.Apellidos
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Fundación</label>
+
+        <select asp-for="Cargo.IdFundacion">
+            <option value="">Seleccione una fundación</option>
+
+            @foreach (var fundacion in Model.Fundaciones)
+            {
+                <option value="@fundacion.IdFundacion">
+                    @fundacion.Nombre
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Fecha del cargo</label>
+
+        <input asp-for="Cargo.FechaCargo"
+               type="datetime-local" />
+    </div>
+
+    <div>
+        <label>Tipo de cargo</label>
+
+        <select asp-for="Cargo.TipoCargo">
+            <option value="">Seleccione un tipo</option>
+            <option value="Consulta">Consulta</option>
+            <option value="Examen">Examen</option>
+            <option value="Medicamento">Medicamento</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Concepto</label>
+
+        <input asp-for="Cargo.Concepto"
+               placeholder="Ejemplo: Hemograma" />
+    </div>
+
+    <div>
+        <label>Monto original</label>
+
+        <input asp-for="Cargo.MontoOriginal"
+               id="montoOriginal"
+               type="number"
+               step="0.01" />
+    </div>
+
+    <div>
+       <label>Descuento (%)</label>
+
+        <input id="porcentajeDescuento"
+               type="number"
+               step="0.01"
+               min="0"
+               max="100"
+               value="0" />
+    </div>
+
+    <div>
+         <label>Descuento aplicado</label>
+
+          <input asp-for="Cargo.Descuento"
+               id="descuento"
+               type="number"  
+               step="0.01"
+               readonly />
+
+   </div>
+    
+   <div>
+        <label>Monto final</label>
+
+          <input asp-for="Cargo.MontoFinal"
+               id="montoFinal"
+               type="number"
+               step="0.01"
+               readonly />
+    </div>
+
+    <div>
+        <label>Estado</label>
+
+        <select asp-for="Cargo.Estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Pagado">Pagado</option>
+            <option value="Anulado">Anulado</option>
+        </select>
+    </div>
+
+    <button type="submit">
+        Registrar Cargo
+    </button>
+
+</form>
+
+<hr />
+
+<h3>Cargos Registrados</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Fundación</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Concepto</th>
+            <th>Monto Original</th>
+            <th>Descuento</th>
+            <th>Monto Final</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var cargo in Model.Cargos)
+        {
+            <tr>
+                <td>@cargo.IdCargo</td>
+
+                <td>
+                    @cargo.Paciente?.Nombres
+                    @cargo.Paciente?.Apellidos
+                </td>
+
+                <td>
+                    @cargo.Fundacion?.Nombre
+                </td>
+
+                <td>
+                    @cargo.FechaCargo.ToString("dd/MM/yyyy HH:mm")
+                </td>
+
+                <td>
+                    @cargo.TipoCargo
+                </td>
+
+                <td>
+                    @cargo.Concepto
+                </td>
+
+                <td>
+                    Q @cargo.MontoOriginal
+                </td>
+
+                <td>
+                    Q @cargo.Descuento
+                </td>
+
+                <td>
+                    Q @cargo.MontoFinal
+                </td>
+
+                <td>
+                    @cargo.Estado
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+   <script>
+    const montoOriginal = document.getElementById("montoOriginal");
+    const porcentajeDescuento = document.getElementById("porcentajeDescuento");
+    const descuento = document.getElementById("descuento");
+    const montoFinal = document.getElementById("montoFinal");
+
+    function calcularCargo() {
+
+        const monto = parseFloat(montoOriginal.value) || 0;
+        const porcentaje = parseFloat(porcentajeDescuento.value) || 0;
+
+        const descuentoCalculado = monto * (porcentaje / 100);
+        const totalCalculado = monto - descuentoCalculado;
+
+        descuento.value = descuentoCalculado.toFixed(2);
+        montoFinal.value = totalCalculado.toFixed(2);
+    }
+
+    montoOriginal.addEventListener("input", calcularCargo);
+    porcentajeDescuento.addEventListener("input", calcularCargo);
+
+    calcularCargo();
+</script>
