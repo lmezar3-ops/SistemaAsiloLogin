@@ -1,55 +1,45 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using SistemaAsiloLogin.Data;
-using SistemaAsiloLogin.Servicios;
-
+using MicroservicioAncianos.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+// Agregar servicios al contenedor
 builder.Services.AddControllers();
-builder.Services.AddHttpClient();
 
+// Configuración de Entity Framework
 builder.Services.AddDbContext<AsiloDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("AsiloConnection")));
 
-builder.Services.AddScoped<AutenticacionService>();
-
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+// Configuración CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirSistemaAsilo", policy =>
     {
-        options.LoginPath = "/";
-        options.LogoutPath = "/";
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
+});
 
-builder.Services.AddAuthorization();
+// OpenAPI
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Configurar el pipeline
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.MapOpenApi();
 }
 
 //app.UseHttpsRedirection();
 
-app.UseRouting();
-
-app.UseAuthentication();
+app.UseCors("PermitirSistemaAsilo");
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllers();
 
-app.MapRazorPages()
-   .WithStaticAssets();
-
 app.Run();
-
