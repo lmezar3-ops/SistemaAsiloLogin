@@ -5,11 +5,25 @@
     ViewData["Title"] = "Citas Médicas";
 }
 
-<h2>Citas Médicas</h2>
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/solicitudes-citas.css"
+          asp-append-version="true" />
+}
 
-<form method="post">
+<div class="modulo-medico">
 
-    <div>
+    <div class="modulo-encabezado">
+        <h2>Citas Médicas</h2>
+        <p class="modulo-descripcion">
+            Programa citas y consulta la información de atención médica.
+        </p>
+    </div>
+
+
+<form method="post" class="formulario-modulo">
+
+    <div class="campo-modulo">
 
         <label>Solicitud Médica</label>
 
@@ -18,12 +32,15 @@
 
             @foreach (var solicitud in Model.Solicitudes)
             {
-                <option value="@solicitud.IdSolicitud">
-                    Solicitud #@solicitud.IdSolicitud -
-                    @solicitud.Paciente?.Nombres
-                    @solicitud.Paciente?.Apellidos
-                    -
-                    @solicitud.Especialidad?.Nombre
+                <option value="@solicitud.IdSolicitud"
+            data-medico-nombre="@(solicitud.MedicoGeneral == null
+                ? ""
+                : solicitud.MedicoGeneral.Nombres + " " +
+                  solicitud.MedicoGeneral.Apellidos)">
+                  Solicitud #@solicitud.IdSolicitud -
+                  @solicitud.Paciente?.Nombres
+                  @solicitud.Paciente?.Apellidos -
+                  @solicitud.Especialidad?.Nombre
                 </option>
             }
 
@@ -31,25 +48,22 @@
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Médico</label>
+ 
+           <input type="text"
+           id="medicoAsignado"
+           readonly
+           placeholder="Seleccione primero una solicitud médica" />
 
-        <select asp-for="Cita.IdMedico">
-            <option value="">Seleccione un médico</option>
-
-            @foreach (var medico in Model.Medicos)
-            {
-                <option value="@medico.IdMedico">
-                    @medico.Nombres @medico.Apellidos
-                </option>
-            }
-
-        </select>
+     <small>
+        El médico se obtiene automáticamente de la solicitud.
+    </small>
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Fecha y hora de la cita</label>
 
@@ -58,29 +72,21 @@
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
-        <label>Estado</label>
+        <label>Estado Inicial</label>
 
-        <select asp-for="Cita.Estado">
+       <input type="text"
+           value="Programada"
+           readonly />
 
-            <option value="Programada">
-                Programada
-            </option>
-
-            <option value="Atendida">
-                Atendida
-            </option>
-
-            <option value="Cancelada">
-                Cancelada
-            </option>
-
-        </select>
+    <small>
+        La cita se registra inicialmente como Programada.
+    </small>
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Observaciones</label>
 
@@ -90,16 +96,20 @@
 
     </div>
 
-    <button type="submit">
-        Registrar Cita
-    </button>
+    <div asp-validation-summary="All"
+     class="text-danger campo-completo"></div>
+
+    <button type="submit" class="btn-modulo campo-completo">
+    Registrar Cita
+</button>
 
 </form>
 
 
-<h3>Citas Registradas</h3>
+<h3 class="seccion-registros">Citas Registradas</h3>
 
-<table>
+<div class="tabla-responsive">
+    <table class="tabla-modulo">
 
     <thead>
 
@@ -154,6 +164,39 @@
             </tr>
         }
 
-    </tbody>
+         </tbody>
+    </table>
+</div>
 
-</table>
+</div>
+
+   @section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const solicitudSelect =
+                document.getElementById("Cita_IdSolicitud");
+
+            const medicoInput =
+                document.getElementById("medicoAsignado");
+
+            function actualizarMedico() {
+
+                const opcion =
+                    solicitudSelect.options[solicitudSelect.selectedIndex];
+
+                const nombre =
+                    opcion?.getAttribute("data-medico-nombre") || "";
+
+                medicoInput.value = nombre;
+            }
+
+            solicitudSelect.addEventListener(
+                "change",
+                actualizarMedico
+            );
+
+            actualizarMedico();
+        });
+    </script>
+}

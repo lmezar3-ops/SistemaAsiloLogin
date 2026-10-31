@@ -11,6 +11,30 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 
+builder.Services.AddHttpClient("Ancianos", cliente =>
+{
+    var url = builder.Configuration["Microservicios:AncianosUrl"]
+        ?? throw new InvalidOperationException("Falta configurar Microservicios:AncianosUrl");
+
+    cliente.BaseAddress = new Uri(url);
+});
+
+builder.Services.AddHttpClient("Medicamentos", cliente =>
+{
+    var url = builder.Configuration["Microservicios:MedicamentosUrl"]
+        ?? throw new InvalidOperationException("Falta configurar Microservicios:MedicamentosUrl");
+
+    cliente.BaseAddress = new Uri(url);
+});
+
+builder.Services.AddHttpClient("Donaciones", cliente =>
+{
+    var url = builder.Configuration["Microservicios:DonacionesUrl"]
+        ?? throw new InvalidOperationException("Falta configurar Microservicios:DonacionesUrl");
+
+    cliente.BaseAddress = new Uri(url);
+});
+
 builder.Services.AddDbContext<AsiloDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("AsiloConnection")));
@@ -22,6 +46,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/";
         options.LogoutPath = "/";
+        options.AccessDeniedPath = "/AccessDenied";
     });
 
 builder.Services.AddAuthorization();

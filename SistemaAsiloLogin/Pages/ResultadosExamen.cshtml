@@ -5,50 +5,91 @@
     ViewData["Title"] = "Resultados de Exámenes";
 }
 
-<h2>Resultados de Exámenes</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/css/solicitudes-citas.css" asp-append-version="true" />
+}
 
-<form method="post">
+<div class="modulo-medico">
 
-    <div>
+    <a asp-page="/ExamenesLaboratorio"
+       class="btn btn-outline-secondary mb-3">
+        ← Volver a Exámenes de Laboratorio
+    </a>
+    
+    @if (TempData["Mensaje"] != null)
+    {
+        <p class="mensaje-exito">@TempData["Mensaje"]</p>
+    }
 
-        <label>Examen</label>
+    @if (TempData["Error"] != null)
+    {
+        <p class="mensaje-error">@TempData["Error"]</p>
+    }
 
-        <select asp-for="Resultado.IdExamen">
 
-            <option value="">Seleccione un examen</option>
-
-            @foreach (var examen in Model.Examenes)
-            {
-                <option value="@examen.IdExamen">
-                    Examen #@examen.IdExamen -
-                    @examen.NombreExamen
-                </option>
-            }
-
-        </select>
-
+    <div class="modulo-encabezado">
+        <h2>Resultados de Exámenes</h2>
+        <p class="modulo-descripcion">
+            Registra y consulta los resultados de los exámenes de laboratorio.
+        </p>
     </div>
 
-    <div>
+<form method="post" class="formulario-modulo">
 
-        <label>Resultado</label>
+  
+<div class="campo-modulo">
 
-        <textarea asp-for="Resultado.Resultado"
-                  rows="5"
-                  placeholder="Ingrese el resultado del examen"></textarea>
+    <label>Examen</label>
 
-    </div>
+    @if (Model.Examenes.Any())
+    {
+      <select asp-for="Resultado.IdExamen">
+    <option value="">Seleccione un examen</option>
 
-    <div>
+    @foreach (var examen in Model.Examenes)
+    {
+        <option value="@examen.IdExamen">
+            Examen #@examen.IdExamen - @examen.NombreExamen
+        </option>
+    }
+</select>
+
+<span asp-validation-for="Resultado.IdExamen"
+      class="text-danger"></span>
+}
+else
+{
+    <p class="mensaje-error">
+        No hay exámenes pendientes de resultado.
+        Los exámenes cancelados o que ya tienen un resultado
+        no están disponibles para registrar otro.
+    </p>
+  }
+
+</div>
+
+    <div class="campo-modulo">
+    <label>Resultado</label>
+
+    <textarea asp-for="Resultado.Resultado"
+              rows="5"
+              placeholder="Ingrese el resultado del examen"></textarea>
+
+    <span asp-validation-for="Resultado.Resultado"
+          class="text-danger"></span>
+</div>
+
+    <div class="campo-modulo">
 
         <label>Fecha del resultado</label>
-
-        <input asp-for="Resultado.FechaResultado"
-               type="datetime-local" />
+<input asp-for="Resultado.FechaResultado"
+       type="datetime-local" />
+<span asp-validation-for="Resultado.FechaResultado"
+      class="text-danger"></span>
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Observaciones</label>
 
@@ -58,17 +99,18 @@
 
     </div>
 
-    <button type="submit">
-        Registrar Resultado
-    </button>
+   <button type="submit" class="btn-modulo campo-completo">
+    Registrar Resultado
+</button>
 
 </form>
 
 <hr />
 
-<h3>Resultados Registrados</h3>
+<h3 class="seccion-registros">Resultados Registrados</h3>
 
-<table>
+<div class="tabla-responsive">
+    <table class="tabla-modulo">
 
     <thead>
 
@@ -111,6 +153,7 @@
             </tr>
         }
 
-    </tbody>
-
-</table>
+       </tbody>
+    </table>
+</div>
+</div>

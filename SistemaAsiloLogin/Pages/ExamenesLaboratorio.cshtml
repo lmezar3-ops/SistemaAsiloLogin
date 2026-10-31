@@ -5,94 +5,117 @@
     ViewData["Title"] = "Exámenes de Laboratorio";
 }
 
-<h2>Exámenes de Laboratorio</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/css/solicitudes-citas.css" asp-append-version="true" />
+}
 
-<form method="post">
 
-    <div>
+<div class="modulo-medico">
 
-        <label>Visita Médica</label>
+    
+    @if (TempData["Mensaje"] != null)
+    {
+        <p class="mensaje-exito">@TempData["Mensaje"]</p>
+    }
 
-        <select asp-for="Examen.IdVisita">
+    @if (TempData["Error"] != null)
+    {
+        <p class="mensaje-error">@TempData["Error"]</p>
+    }
 
-            <option value="">Seleccione una visita</option>
 
-            @foreach (var visita in Model.Visitas)
-            {
-                <option value="@visita.IdVisita">
-                    Visita #@visita.IdVisita -
-                    @visita.Paciente?.Nombres
-                    @visita.Paciente?.Apellidos
-                    -
-                    @visita.Medico?.Nombres
-                    @visita.Medico?.Apellidos
-                </option>
-            }
-
-        </select>
-
+    <div class="modulo-encabezado">
+        <h2>Exámenes de Laboratorio</h2>
+        <p class="modulo-descripcion">
+            Registra y consulta los exámenes solicitados durante las visitas médicas.
+        </p>
     </div>
 
-    <div>
-
-        <label>Nombre del examen</label>
-
-        <input asp-for="Examen.NombreExamen"
-               placeholder="Ejemplo: Hemograma Completo" />
-
-    </div>
-
-    <div>
-
-        <label>Fecha de solicitud</label>
-
-        <input asp-for="Examen.FechaSolicitud"
-               type="datetime-local" />
-
-    </div>
-
-    <div>
-
-        <label>Estado</label>
-
-        <select asp-for="Examen.Estado">
-
-            <option value="Pendiente">Pendiente</option>
-            <option value="Realizado">Realizado</option>
-            <option value="Cancelado">Cancelado</option>
-
-        </select>
-
-    </div>
-
-    <div>
-
-        <label>Costo</label>
-
-        <input asp-for="Examen.Costo"
-               type="number"
-               step="0.01" />
-
-    </div>
-
-    <button type="submit">
-        Registrar Examen
-    </button>
-
-</form>
-
-<hr />
 
 
-<a href="/ResultadosExamen">
-    Registrar Resultados de Exámenes
-</a>
+    <form method="post" class="formulario-modulo">
 
-<hr />
+        @if (!string.IsNullOrWhiteSpace(Model.AdvertenciaRepeticion))
+        {
+            <div class="campo-modulo campo-completo">
+                <p class="mensaje-error">@Model.AdvertenciaRepeticion</p>
+            </div>
+        }
 
-<h3>Exámenes Registrados</h3>
+        <div class="campo-modulo">
+            <label asp-for="Examen.IdVisita">Visita Médica</label>
+            <select asp-for="Examen.IdVisita">
+                <option value="">Seleccione una visita</option>
+                @foreach (var visita in Model.Visitas)
+                {
+                    <option value="@visita.IdVisita">
+                        Visita #@visita.IdVisita -
+                        @visita.Paciente?.Nombres @visita.Paciente?.Apellidos -
+                        @visita.Medico?.Nombres @visita.Medico?.Apellidos
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="Examen.IdVisita" class="text-danger"></span>
+        </div>
 
-<table>
+        <div class="campo-modulo">
+            <label asp-for="Examen.NombreExamen">Nombre del examen</label>
+            <input asp-for="Examen.NombreExamen"
+                   placeholder="Ejemplo: Hemograma Completo" />
+            <span asp-validation-for="Examen.NombreExamen" class="text-danger"></span>
+        </div>
+
+        <div class="campo-modulo">
+            <label asp-for="Examen.JustificacionRepeticion">
+                Justificación médica de la repetición (opcional)
+            </label>
+            <textarea asp-for="Examen.JustificacionRepeticion"
+                      maxlength="500"
+                      rows="3"
+                      placeholder="Explica por qué es necesario repetir el examen, si corresponde."></textarea>
+            <small>
+                Si el paciente tiene un examen del mismo tipo durante los siete días
+                anteriores, deberás justificar la repetición.
+            </small>
+            <span asp-validation-for="Examen.JustificacionRepeticion"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="campo-modulo">
+            <label asp-for="Examen.FechaSolicitud">Fecha de solicitud</label>
+           
+            <input asp-for="Examen.FechaSolicitud"
+             asp-format="{0:yyyy-MM-ddTHH:mm}"
+              type="datetime-local"
+               step="60" />
+
+            <span asp-validation-for="Examen.FechaSolicitud"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="campo-modulo">
+            <label asp-for="Examen.Costo">Costo</label>
+            <input asp-for="Examen.Costo" type="number" step="0.01" min="0" />
+            <span asp-validation-for="Examen.Costo" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-modulo campo-completo">
+            Registrar Examen
+        </button>
+
+    </form>
+
+
+<div class="acceso-resultados">
+    <a href="/ResultadosExamen" class="btn-modulo">
+        Registrar Resultados de Exámenes
+    </a>
+</div>
+
+<h3 class="seccion-registros">Exámenes Registrados</h3>
+
+<div class="tabla-responsive">
+    <table class="tabla-modulo">
 
     <thead>
         <tr>
@@ -102,6 +125,7 @@
             <th>Fecha</th>
             <th>Estado</th>
             <th>Costo</th>
+            <th>Acciones</th>
         </tr>
     </thead>
 
@@ -122,10 +146,31 @@
                 <td>@examen.Estado</td>
 
                 <td>@examen.Costo</td>
+                <td>
+                   @if (!string.Equals(
+                    examen.Estado,
+                    "Cancelado",
+                     StringComparison.OrdinalIgnoreCase))
+                            {
+                      <form method="post"
+                      asp-page-handler="Cancelar"
+                      asp-route-id="@examen.IdExamen"
+                      onsubmit="return confirm('¿Seguro que deseas cancelar el examen #@examen.IdExamen? 
+                      El registro se conservará.');">
 
+                      <button type="submit" class="btn-modulo">
+                         Cancelar
+                       </button>
+                       </form>
+                      }
+                     else
+                      {
+                    <span>Sin acciones</span>
+                    }
+                </td>
             </tr>
         }
 
-    </tbody>
-
-</table>
+   </tbody>
+    </table>
+</div>

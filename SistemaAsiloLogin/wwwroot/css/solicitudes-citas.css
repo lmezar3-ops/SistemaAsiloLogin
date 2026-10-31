@@ -1,0 +1,190 @@
+/* =========================================
+   SOLICITUDES Y CITAS MÉDICAS
+   ========================================= */
+
+.modulo-medico {
+    --medico-azul: #1E293B;
+    --medico-celeste: #EAF6FC;
+    --medico-naranja: #F97316;
+    --medico-borde: #D5E5EF;
+    color: #334155;
+}
+
+    .modulo-medico .modulo-encabezado {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #FFFFFF, #EAF6FC);
+        border: 1px solid var(--medico-borde);
+        border-left: 6px solid var(--medico-naranja);
+        border-radius: 14px;
+    }
+
+    .modulo-medico h2 {
+        margin: 0 0 0.4rem;
+        color: var(--medico-azul);
+        font-weight: 800;
+    }
+
+    .modulo-medico .modulo-descripcion {
+        margin: 0;
+        color: #64748B;
+    }
+
+    .modulo-medico .formulario-modulo {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.2rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        background: #FFFFFF;
+        border: 1px solid var(--medico-borde);
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(30, 41, 59, 0.07);
+    }
+
+    .modulo-medico .campo-modulo {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        min-width: 0;
+    }
+
+        .modulo-medico .campo-modulo label {
+            color: var(--medico-azul);
+            font-weight: 700;
+        }
+
+        .modulo-medico .campo-modulo input,
+        .modulo-medico .campo-modulo select,
+        .modulo-medico .campo-modulo textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 0.65rem 0.8rem;
+            color: #334155;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            font: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .modulo-medico .campo-modulo textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+            .modulo-medico .campo-modulo input:focus,
+            .modulo-medico .campo-modulo select:focus,
+            .modulo-medico .campo-modulo textarea:focus {
+                outline: none;
+                border-color: #38A3D1;
+                box-shadow: 0 0 0 3px rgba(56, 163, 209, 0.16);
+            }
+
+    .modulo-medico .campo-completo {
+        grid-column: 1 / -1;
+    }
+
+    .modulo-medico .btn-modulo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: fit-content;
+        min-height: 44px;
+        padding: 0.7rem 1.3rem;
+        color: #FFFFFF;
+        background: var(--medico-naranja);
+        border: 1px solid var(--medico-naranja);
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+        .modulo-medico .btn-modulo:hover {
+            color: #FFFFFF;
+            background: #EA580C;
+            border-color: #EA580C;
+            transform: translateY(-1px);
+        }
+
+    .modulo-medico .seccion-registros {
+        margin: 1.5rem 0 1rem;
+        color: var(--medico-azul);
+        font-weight: 800;
+    }
+
+    .modulo-medico .tabla-responsive {
+        width: 100%;
+        overflow-x: auto;
+        margin-bottom: 2rem;
+        background: #FFFFFF;
+        border: 1px solid var(--medico-borde);
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(30, 41, 59, 0.05);
+    }
+
+    .modulo-medico .tabla-modulo {
+        width: 100%;
+        min-width: 800px;
+        margin: 0;
+        border-collapse: collapse;
+        background: #FFFFFF;
+    }
+
+        .modulo-medico .tabla-modulo thead {
+            color: #FFFFFF;
+            background: var(--medico-azul);
+        }
+
+        .modulo-medico .tabla-modulo th {
+            padding: 0.95rem 0.85rem;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 3px solid var(--medico-naranja);
+        }
+
+        .modulo-medico .tabla-modulo td {
+            padding: 0.85rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .modulo-medico .tabla-modulo tbody tr:nth-child(even) {
+            background: #F8FBFD;
+        }
+
+        .modulo-medico .tabla-modulo tbody tr:hover {
+            background: #EAF6FC;
+        }
+
+        .modulo-medico .tabla-modulo tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .modulo-medico .aviso-modulo {
+        margin-bottom: 1.2rem;
+        padding: 1rem 1.2rem;
+        border-radius: 10px;
+    }
+
+@media (max-width: 767px) {
+    .modulo-medico .modulo-encabezado {
+        padding: 1.1rem;
+    }
+
+    .modulo-medico .formulario-modulo {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .modulo-medico .campo-completo {
+        grid-column: auto;
+    }
+
+    .modulo-medico .btn-modulo {
+        width: 100%;
+    }
+}

@@ -1,0 +1,134 @@
+﻿
+@page
+@model SistemaAsiloLogin.Pages.EditarPacienteModel
+@{
+    ViewData["Title"] = "Editar paciente";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/registro.css" />
+}
+
+<div class="registro-container">
+    <div class="registro-box">
+        <h1>Editar paciente</h1>
+        <p>Paciente ID: @Model.Paciente.IdPaciente</p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+        {
+            <div class="alert alert-danger">@Model.MensajeError</div>
+        }
+
+        <form method="post"
+              id="formEditarPaciente"
+              data-paciente-id="@Model.Paciente.IdPaciente">
+
+            <input type="hidden" asp-for="Paciente.IdPaciente" />
+            <input type="hidden" asp-for="Paciente.Estado" />
+
+            <div class="registro-grid">
+                <div>
+                    <label asp-for="Paciente.Nombres">Nombres</label>
+                    <input asp-for="Paciente.Nombres" maxlength="100" required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.Apellidos">Apellidos</label>
+                    <input asp-for="Paciente.Apellidos" maxlength="100" required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.FechaNacimiento">Fecha de nacimiento</label>
+                    <input asp-for="Paciente.FechaNacimiento" type="date" required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.DPI">DPI</label>
+                    <input asp-for="Paciente.DPI"
+                           maxlength="13"
+                           minlength="13"
+                           pattern="[0-9]{13}"
+                           inputmode="numeric"
+                           required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.Sexo">Sexo</label>
+                    <select asp-for="Paciente.Sexo" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.Telefono">Teléfono</label>
+                    <input asp-for="Paciente.Telefono" maxlength="30" required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.Direccion">Dirección</label>
+                    <input asp-for="Paciente.Direccion" maxlength="250" required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.FechaIngreso">Fecha de ingreso</label>
+                    <input asp-for="Paciente.FechaIngreso" type="date" required />
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.MotivoIngreso">Motivo de ingreso</label>
+                    <textarea asp-for="Paciente.MotivoIngreso"
+                              rows="3"
+                              maxlength="500"
+                              required></textarea>
+                </div>
+
+                <div>
+                    <label asp-for="Paciente.Psicopatologia">Psicopatología</label>
+                    <textarea asp-for="Paciente.Psicopatologia" rows="3"></textarea>
+                </div>
+            </div>
+
+            <hr />
+
+            <section class="medicaciones-habituales"
+                     id="seccionMedicacionesHabituales">
+
+                <h2>Medicación habitual del paciente</h2>
+                <p>
+                    Aquí puedes actualizar las indicaciones registradas.
+                    Marcar una medicación como inactiva conserva su historial.
+                    Estos cambios no modifican las existencias de Farmacia.
+                </p>
+
+                <div id="estadoCargaMedicaciones" role="status">
+                    Cargando medicamentos habituales...
+                </div>
+
+                <div id="listaMedicacionesHabituales"></div>
+
+                <button type="button" id="agregarMedicacionHabitual">
+                    + Agregar otra medicación
+                </button>
+
+                <p id="mensajeMedicaciones" role="status" aria-live="polite"></p>
+            </section>
+
+            <hr />
+
+            <button type="submit" id="guardarCambiosPaciente">
+                Guardar cambios
+            </button>
+
+            <a asp-page="/PacientesRegistrados"
+               class="btn btn-outline-secondary">
+                Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/editar-paciente.js" asp-append-version="true"></script>
+}

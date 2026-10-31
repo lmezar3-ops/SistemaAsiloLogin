@@ -1,0 +1,632 @@
+@page
+@model SistemaAsiloLogin.Pages.Reportes.CobrosPacientesModel
+
+@{
+    ViewData["Title"] = "Reporte de cobros por paciente";
+    string alcance = Model.PacienteSeleccionado == null
+        ? "Todos los pacientes"
+        : $"{Model.PacienteSeleccionado.Nombres} {Model.PacienteSeleccionado.Apellidos}";
+}
+
+<style>
+    /* Diseño institucional: misma línea visual que los reportes médicos y de donaciones */
+    .reporte-cobros {
+        max-width: 1350px;
+        margin: 25px auto 40px;
+        color: #1e293b;
+    }
+
+    .reporte-cobros .encabezado-reporte {
+        padding: 25px;
+        margin-bottom: 22px;
+        background: #1e293b;
+        border-bottom: 5px solid #f97316;
+        border-radius: 12px;
+        color: #fff;
+    }
+
+    .reporte-cobros .institucion {
+        color: #fdba74;
+        font-weight: 700;
+        font-size: .85rem;
+        margin-bottom: 8px;
+    }
+
+    .reporte-cobros .encabezado-reporte h1 {
+        color: #fff !important;
+        font-size: 1.7rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .reporte-cobros .subtitulo {
+        color: #cbd5e1;
+        margin-bottom: 0;
+    }
+
+    .reporte-cobros .btn-volver {
+        background: #f97316;
+        border: 1px solid #f97316;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .reporte-cobros .btn-volver:hover {
+        background: #ea580c;
+        color: #fff;
+    }
+
+    .reporte-cobros .reporte-tarjeta {
+        background: #fff;
+        border: 1px solid #dbe4ee;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .reporte-cobros .reporte-seccion {
+        background: #1e293b;
+        color: #fff;
+        border-left: 5px solid #f97316;
+        padding: 12px 15px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        border-radius: 5px;
+        margin-bottom: 16px;
+    }
+
+    .reporte-cobros .reporte-dato {
+        background: #edf6fb;
+        border-radius: 8px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .reporte-cobros .reporte-dato small {
+        color: #64748b;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .reporte-cobros .reporte-dato strong {
+        color: #0f2747;
+        font-size: 1.05rem;
+    }
+
+    .reporte-cobros .tarjeta-resumen {
+        background: #edf6fb;
+        border: 1px solid #e1e7ef;
+        border-radius: 8px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .reporte-cobros .etiqueta {
+        color: #64748b;
+        font-size: .86rem;
+        margin-bottom: 8px;
+    }
+
+    .reporte-cobros .importe {
+        color: #0f2747;
+        font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+        font-weight: 800;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .reporte-cobros .reporte-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .9rem;
+    }
+
+    .reporte-cobros .reporte-tabla th {
+        background: #1e293b;
+        color: #fff;
+        border: 1px solid #334155;
+        padding: 10px;
+        vertical-align: middle;
+    }
+
+    .reporte-cobros .reporte-tabla td {
+        border: 1px solid #dbe4ee;
+        padding: 10px;
+        vertical-align: middle;
+        overflow-wrap: anywhere;
+    }
+
+    .reporte-cobros .reporte-tabla tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    .reporte-cobros .reporte-tabla .monto {
+        white-space: nowrap;
+        overflow-wrap: normal;
+        text-align: right;
+    }
+
+    .reporte-cobros .reporte-nota {
+        background: #fff7ed;
+        border-left: 4px solid #f97316;
+        padding: 14px;
+        border-radius: 5px;
+        font-size: .88rem;
+    }
+
+    /* El desplegable debe sobresalir de la tarjeta sin quedar recortado. */
+    .reporte-cobros .filtros-reporte,
+    .reporte-cobros .filtros-reporte .row {
+        overflow: visible !important;
+    }
+
+    .selector-paciente-cobros {
+        position: relative;
+        z-index: 1100;
+    }
+
+    .lista-pacientes-cobros {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 250px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-shadow: 0 6px 18px rgba(0,0,0,.15);
+        z-index: 1101;
+    }
+
+    .lista-pacientes-cobros[hidden],
+    .opcion-paciente-cobros[hidden] {
+        display: none !important;
+    }
+
+    .opcion-paciente-cobros {
+        display: block;
+        width: 100%;
+        padding: 10px 12px;
+        text-align: left;
+        background: #fff;
+        color: #212529;
+        border: none;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+    }
+
+    .opcion-paciente-cobros:hover,
+    .opcion-paciente-cobros:focus {
+        background: #eaf3fb;
+        color: #17365d;
+    }
+
+    @@page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    @@media print {
+        .no-imprimir, .navbar, .sidebar, body > nav, body > footer {
+            display: none !important;
+        }
+
+        body {
+            background: #fff !important;
+        }
+
+        .contenido-principal {
+            max-width: none !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .reporte-cobros {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .reporte-cobros .encabezado-reporte {
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border: 1px solid #1e293b;
+            border-bottom: 3px solid #f97316;
+            border-radius: 0;
+            background: #fff !important;
+            color: #1e293b !important;
+            break-inside: avoid;
+        }
+
+        .reporte-cobros .encabezado-reporte h1,
+        .reporte-cobros .encabezado-reporte .subtitulo,
+        .reporte-cobros .institucion {
+            color: #1e293b !important;
+        }
+
+        .reporte-cobros .encabezado-reporte h1 {
+            font-size: 17pt;
+        }
+
+        .reporte-cobros .reporte-tarjeta {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #d0d7df;
+            box-shadow: none !important;
+            break-inside: auto;
+        }
+
+        .reporte-cobros .reporte-seccion {
+            color: #1e293b !important;
+            background: #e8eef5 !important;
+            border-left: 4px solid #f97316;
+            font-size: 11pt;
+            padding: 7px 10px;
+            margin-bottom: 8px;
+            break-after: avoid;
+        }
+
+        .reporte-cobros .reporte-dato,
+        .reporte-cobros .tarjeta-resumen {
+            padding: 8px;
+            border: 1px solid #dbe4ee;
+            break-inside: avoid;
+        }
+
+        .reporte-cobros .importe {
+            font-size: 12pt;
+        }
+
+        .reporte-cobros .reporte-tabla {
+            font-size: 8pt !important;
+            width: 100% !important;
+        }
+
+        .reporte-cobros .reporte-tabla th,
+        .reporte-cobros .reporte-tabla td {
+            padding: 4px 3px !important;
+            border: 1px solid #888 !important;
+        }
+
+        .reporte-cobros .reporte-tabla th {
+            background: #e8eef5 !important;
+            color: #1e293b !important;
+            white-space: normal !important;
+        }
+
+        .reporte-cobros .reporte-tabla thead {
+            display: table-header-group;
+        }
+
+        .reporte-cobros .reporte-tabla tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .reporte-cobros .table-responsive {
+            overflow: visible !important;
+        }
+
+        .reporte-cobros .reporte-nota {
+            padding: 8px;
+            break-inside: avoid;
+        }
+
+        .reporte-cobros .encabezado-reporte,
+        .reporte-cobros .reporte-seccion,
+        .reporte-cobros .reporte-tabla th,
+        .reporte-cobros .reporte-dato,
+        .reporte-cobros .tarjeta-resumen {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+</style>
+
+<div class="container-fluid reporte-cobros">
+    <div class="encabezado-reporte">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="institucion">ASILO CABEZA DE ALGODÓN</div>
+                <h1>Reporte de cobros por paciente</h1>
+                <p class="subtitulo">Consulta de cargos, cuotas, pagos y saldos por paciente y período.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2 no-imprimir">
+                <a asp-page="/Reportes" class="btn btn-volver">Volver a reportes</a>
+                <button type="button" class="btn btn-success fw-bold" onclick="window.print()">
+                    Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section class="reporte-tarjeta filtros-reporte no-imprimir">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <h2 class="h5 mb-0">Filtros del reporte</h2>
+            <a asp-page="/CajaPagos" class="btn btn-sm btn-outline-secondary">Caja y Pagos</a>
+        </div>
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <div class="selector-paciente-cobros">
+                        <label for="buscarPacienteCobros" class="form-label">Paciente</label>
+                        <input type="text"
+                               id="buscarPacienteCobros"
+                               class="form-control"
+                               placeholder="Todos los pacientes / Buscar por nombre..."
+                               autocomplete="off"
+                               value="@(Model.PacienteSeleccionado is null
+                                   ? ""
+                                   : Model.PacienteSeleccionado.Nombres + " " +
+                                     Model.PacienteSeleccionado.Apellidos)" />
+                        <input type="hidden" asp-for="IdPaciente" />
+                        <div id="listaPacientesCobros" class="lista-pacientes-cobros" hidden>
+                            @foreach (var paciente in Model.Pacientes)
+                            {
+                                <button type="button"
+                                        class="opcion-paciente-cobros"
+                                        data-id="@paciente.IdPaciente"
+                                        data-nombre="@($"{paciente.Nombres} {paciente.Apellidos}")">
+                                    @paciente.Nombres @paciente.Apellidos
+                                </button>
+                            }
+                        </div>
+                        <small class="text-muted">Escribe un nombre o apellido. Deja vacío para consultar todos.</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="FechaDesde" class="form-label">Fecha inicial</label>
+                    <input asp-for="FechaDesde" type="date" class="form-control" required />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="FechaHasta" class="form-label">Fecha final</label>
+                    <input asp-for="FechaHasta" type="date" class="form-control" required />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Consultar</button>
+                </div>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
+        </form>
+    </section>
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-warning">Revisa los filtros del reporte antes de consultar.</div>
+    }
+    else
+    {
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">Información del reporte</h2>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="reporte-dato">
+                        <small>Paciente / Alcance</small>
+                        <strong>@alcance</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="reporte-dato">
+                        <small>Período consultado</small>
+                        <strong>@Model.FechaDesde.ToString("dd/MM/yyyy") - @Model.FechaHasta.ToString("dd/MM/yyyy")</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="reporte-dato">
+                        <small>Fecha de emisión</small>
+                        <strong>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">Resumen financiero</h2>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="tarjeta-resumen">
+                        <p class="etiqueta">Cargos del período</p>
+                        <p class="importe">Q @Model.TotalCargosPeriodo.ToString("N2")</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-resumen">
+                        <p class="etiqueta">Cuotas del período</p>
+                        <p class="importe">Q @Model.TotalCuotasPeriodo.ToString("N2")</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-resumen">
+                        <p class="etiqueta">Pagos recibidos en el período</p>
+                        <p class="importe">Q @Model.TotalPagosPeriodo.ToString("N2")</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-resumen">
+                        <p class="etiqueta">Saldo pendiente al cierre</p>
+                        <p class="importe">Q @Model.SaldoPendienteAlCierre.ToString("N2")</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">Detalle de cargos y cuotas</h2>
+            <p class="text-muted small">
+                Se incluyen los cargos y cuotas del período y las deudas anteriores que continúan
+                pendientes al cierre. El saldo considera los pagos registrados hasta la fecha final.
+            </p>
+            @if (Model.Detalles.Any())
+            {
+                <div class="table-responsive">
+                    <table class="reporte-tabla">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Tipo</th>
+                                <th>Referencia</th>
+                                <th>Fecha</th>
+                                <th>Concepto</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Pagado al cierre</th>
+                                <th class="text-end">Saldo pendiente</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in Model.Detalles)
+                            {
+                                <tr>
+                                    <td>
+                                        @detalle.Paciente
+                                        <small class="d-block text-muted">ID: @detalle.IdPaciente</small>
+                                    </td>
+                                    <td>@detalle.Tipo</td>
+                                    <td>#@detalle.IdReferencia</td>
+                                    <td>@detalle.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@detalle.Concepto</td>
+                                    <td class="monto">Q @detalle.Total.ToString("N2")</td>
+                                    <td class="monto">Q @detalle.Pagado.ToString("N2")</td>
+                                    <td class="monto">Q @detalle.Saldo.ToString("N2")</td>
+                                    <td>@detalle.Estado</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No hay cargos, cuotas ni saldos pendientes para los filtros seleccionados.
+                </div>
+            }
+        </section>
+
+        <div class="reporte-nota">
+            <strong>Observaciones:</strong> Los saldos reflejan los pagos registrados hasta
+            la fecha final consultada. Los importes se muestran en quetzales.
+        </div>
+        <p class="text-center text-muted small mt-3">
+            Asilo Cabeza de Algodón | Sistema de Administración | Reporte generado automáticamente
+        </p>
+    }
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const buscar = document.getElementById("buscarPacienteCobros");
+    const idPaciente = document.getElementById("IdPaciente");
+    const lista = document.getElementById("listaPacientesCobros");
+
+    if (!buscar || !idPaciente || !lista) {
+        return;
+    }
+
+    const opciones = Array.from(
+        lista.querySelectorAll(".opcion-paciente-cobros")
+    );
+
+    function normalizar(texto) {
+        return (texto || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    }
+
+    function filtrarPacientes() {
+
+        const busquedas = normalizar(buscar.value)
+            .split(/\s+/)
+            .filter(Boolean);
+
+        let encontrados = 0;
+
+        opciones.forEach(opcion => {
+
+            const palabras = normalizar(opcion.dataset.nombre)
+                .split(/\s+/);
+
+            const coincide = busquedas.every(busqueda =>
+                palabras.some(palabra =>
+                    palabra.startsWith(busqueda)
+                )
+            );
+
+            opcion.hidden = !coincide;
+
+            if (coincide) {
+                encontrados++;
+            }
+        });
+
+        lista.hidden = encontrados === 0;
+    }
+
+    buscar.addEventListener("input", function () {
+
+        // Al escribir, la selección anterior deja de ser válida.
+        idPaciente.value = "";
+        buscar.setCustomValidity("");
+
+        filtrarPacientes();
+    });
+
+    buscar.addEventListener("focus", filtrarPacientes);
+
+    opciones.forEach(opcion => {
+
+        opcion.addEventListener("click", function () {
+
+            buscar.value = opcion.dataset.nombre;
+            idPaciente.value = opcion.dataset.id;
+
+            buscar.setCustomValidity("");
+            lista.hidden = true;
+        });
+    });
+
+    document.addEventListener("click", function (evento) {
+
+        if (!evento.target.closest(".selector-paciente-cobros")) {
+            lista.hidden = true;
+        }
+    });
+
+    buscar.addEventListener("keydown", function (evento) {
+
+        if (evento.key === "Escape") {
+            lista.hidden = true;
+        }
+    });
+
+    const formulario = buscar.closest("form");
+
+    formulario.addEventListener("submit", function (evento) {
+
+        // Campo vacío = consultar todos los pacientes.
+        if (buscar.value.trim() === "") {
+            idPaciente.value = "";
+            buscar.setCustomValidity("");
+            return;
+        }
+
+        // Si escribió un nombre, debe elegirlo de la lista.
+        if (!idPaciente.value) {
+
+            evento.preventDefault();
+
+            buscar.setCustomValidity(
+                "Selecciona un paciente de la lista."
+            );
+
+            buscar.reportValidity();
+        }
+    });
+
+});
+</script>

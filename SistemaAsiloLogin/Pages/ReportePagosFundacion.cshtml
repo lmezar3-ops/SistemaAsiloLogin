@@ -1,0 +1,460 @@
+@page
+@model SistemaAsiloLogin.Pages.ReportePagosFundacionModel
+
+@{
+    ViewData["Title"] = "Reporte de pagos a la fundación";
+
+    var nombreFundacion = "Todas las fundaciones";
+    foreach (var fundacion in Model.Fundaciones)
+    {
+        if (Model.IdFundacion == fundacion.IdFundacion)
+        {
+            nombreFundacion = fundacion.Nombre;
+            break;
+        }
+    }
+}
+
+<style>
+    /* Diseño institucional, exclusivo de Pagos a la Fundación */
+    .reporte-fundacion {
+        max-width: 1350px;
+        margin: 25px auto 40px;
+        color: #1e293b;
+    }
+
+    .reporte-fundacion .rf-encabezado {
+        background: #1e293b;
+        border-bottom: 5px solid #f97316;
+        color: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 22px;
+    }
+
+    .reporte-fundacion .rf-institucion {
+        color: #fdba74;
+        font-size: .85rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    .reporte-fundacion .rf-encabezado h1 {
+        color: #fff !important;
+        font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+        font-weight: 800;
+        margin: 0 0 8px;
+    }
+
+    .reporte-fundacion .rf-subtitulo {
+        color: #cbd5e1;
+        margin: 0;
+    }
+
+    .reporte-fundacion .rf-tarjeta {
+        background: #fff;
+        border: 1px solid #dbe4ee;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .reporte-fundacion .rf-seccion {
+        background: #1e293b;
+        border-left: 5px solid #f97316;
+        border-radius: 5px;
+        color: #fff !important;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0 0 16px;
+        padding: 12px 15px;
+    }
+
+    .reporte-fundacion .rf-dato {
+        background: #edf6fb;
+        border-radius: 8px;
+        height: 100%;
+        padding: 14px;
+    }
+
+    .reporte-fundacion .rf-dato small,
+    .reporte-fundacion .rf-indicador small {
+        color: #64748b;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .reporte-fundacion .rf-dato strong {
+        display: block;
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+    }
+
+    .reporte-fundacion .rf-indicador {
+        background: #edf6fb;
+        border: 1px solid #e2eaf2;
+        border-radius: 9px;
+        height: 100%;
+        padding: 18px;
+    }
+
+    .reporte-fundacion .rf-indicador strong {
+        color: #17365d;
+        display: block;
+        font-size: clamp(1.15rem, 2vw, 1.5rem);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .reporte-fundacion .rf-tabla {
+        border-collapse: collapse;
+        font-size: .9rem;
+        width: 100%;
+    }
+
+    .reporte-fundacion .rf-tabla th {
+        background: #1e293b !important;
+        border: 1px solid #334155;
+        color: #fff !important;
+        padding: 11px;
+        vertical-align: middle;
+    }
+
+    .reporte-fundacion .rf-tabla td {
+        border: 1px solid #dbe4ee;
+        padding: 10px;
+        vertical-align: middle;
+        overflow-wrap: anywhere;
+    }
+
+    .reporte-fundacion .rf-tabla tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    .reporte-fundacion .rf-tabla tfoot td {
+        background: #edf6fb;
+        color: #17365d;
+        font-weight: 800;
+    }
+
+    .reporte-fundacion .rf-monto {
+        white-space: nowrap;
+    }
+
+    .reporte-fundacion .rf-btn-volver {
+        background: #f97316;
+        border: 1px solid #f97316;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .reporte-fundacion .rf-btn-volver:hover {
+        background: #ea580c;
+        color: #fff;
+    }
+
+    .reporte-fundacion .rf-btn-consultar {
+        background: #f97316;
+        border: 1px solid #f97316;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .reporte-fundacion .rf-btn-consultar:hover {
+        background: #ea580c;
+        color: #fff;
+    }
+
+    .reporte-fundacion .rf-nota {
+        background: #fff7ed;
+        border-left: 4px solid #f97316;
+        border-radius: 5px;
+        font-size: .85rem;
+        padding: 14px;
+    }
+
+    @@page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    @@media print {
+        .no-imprimir,
+        .navbar,
+        .sidebar {
+            display: none !important;
+        }
+
+        body {
+            background: #fff !important;
+        }
+
+        .reporte-fundacion {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .reporte-fundacion .rf-encabezado {
+            padding: 15px !important;
+            margin-bottom: 12px !important;
+            background: #fff !important;
+            color: #17365d !important;
+            border: 1px solid #17365d !important;
+            border-bottom: 4px solid #f97316 !important;
+            break-inside: avoid;
+        }
+
+        .reporte-fundacion .rf-encabezado h1,
+        .reporte-fundacion .rf-institucion,
+        .reporte-fundacion .rf-subtitulo {
+            color: #17365d !important;
+        }
+
+        .reporte-fundacion .rf-tarjeta {
+            padding: 12px !important;
+            margin-bottom: 12px !important;
+            box-shadow: none !important;
+            break-inside: auto;
+        }
+
+        .reporte-fundacion .rf-seccion {
+            background: #e8eef5 !important;
+            color: #17365d !important;
+            border-left: 4px solid #f97316 !important;
+            padding: 8px 10px !important;
+            break-after: avoid;
+        }
+
+        .reporte-fundacion .rf-dato,
+        .reporte-fundacion .rf-indicador {
+            padding: 10px !important;
+            background: #f5f8fc !important;
+            break-inside: avoid;
+        }
+
+        .reporte-fundacion .rf-indicador strong {
+            font-size: 13pt !important;
+        }
+
+        .reporte-fundacion .rf-tabla {
+            font-size: 9px !important;
+        }
+
+        .reporte-fundacion .rf-tabla th {
+            background: #e8eef5 !important;
+            color: #17365d !important;
+            border-color: #94a3b8 !important;
+        }
+
+        .reporte-fundacion .rf-tabla th,
+        .reporte-fundacion .rf-tabla td {
+            padding: 5px !important;
+        }
+
+        .reporte-fundacion .rf-tabla thead {
+            display: table-header-group;
+        }
+
+        .reporte-fundacion .rf-tabla tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .reporte-fundacion .table-responsive {
+            overflow: visible !important;
+        }
+
+        .reporte-fundacion .rf-nota {
+            background: #fff !important;
+            break-inside: avoid;
+        }
+
+        .reporte-fundacion .rf-encabezado,
+        .reporte-fundacion .rf-seccion,
+        .reporte-fundacion .rf-tabla th,
+        .reporte-fundacion .rf-dato,
+        .reporte-fundacion .rf-indicador {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>
+
+<div class="container-fluid reporte-fundacion">
+    <!-- Encabezado institucional -->
+    <header class="rf-encabezado">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="rf-institucion">ASILO CABEZA DE ALGODÓN</div>
+                <h1>Reporte de pagos a la fundación</h1>
+                <p class="rf-subtitulo">Consulta de pagos registrados por fundación y período.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2 no-imprimir">
+                <a asp-page="/Reportes" class="btn rf-btn-volver">Volver a reportes</a>
+                <button type="button" class="btn btn-success fw-bold" onclick="window.print()">
+                    Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filtros existentes: misma funcionalidad y nombres de parámetros -->
+    <section class="rf-tarjeta no-imprimir">
+        <h2 class="h5 mb-3">Filtros del reporte</h2>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="IdFundacion" class="form-label">Fundación</label>
+                <select id="IdFundacion" name="IdFundacion" class="form-select">
+                    <option value="">Todas las fundaciones</option>
+                    @foreach (var fundacion in Model.Fundaciones)
+                    {
+                        if (Model.IdFundacion == fundacion.IdFundacion)
+                        {
+                            <option value="@fundacion.IdFundacion" selected>@fundacion.Nombre</option>
+                        }
+                        else
+                        {
+                            <option value="@fundacion.IdFundacion">@fundacion.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="FechaDesde" class="form-label">Fecha inicial</label>
+                <input id="FechaDesde" type="date" name="FechaDesde" class="form-control"
+                       value="@(Model.FechaDesde?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="col-md-3">
+                <label for="FechaHasta" class="form-label">Fecha final</label>
+                <input id="FechaHasta" type="date" name="FechaHasta" class="form-control"
+                       value="@(Model.FechaHasta?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn rf-btn-consultar w-100">Consultar</button>
+            </div>
+        </form>
+    </section>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+    else
+    {
+        <!-- Información del reporte -->
+        <section class="rf-tarjeta">
+            <h2 class="rf-seccion">Información del reporte</h2>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="rf-dato">
+                        <small>Fundación / Alcance</small>
+                        <strong>@nombreFundacion</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="rf-dato">
+                        <small>Período consultado</small>
+                        <strong>@Model.FechaDesde?.ToString("dd/MM/yyyy") - @Model.FechaHasta?.ToString("dd/MM/yyyy")</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="rf-dato">
+                        <small>Fecha de emisión</small>
+                        <strong>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resumen financiero -->
+        <section class="rf-tarjeta">
+            <h2 class="rf-seccion">Resumen de pagos a la fundación</h2>
+            <div class="row g-3">
+                <div class="col-md-3 col-sm-6">
+                    <div class="rf-indicador">
+                        <small>Pagos registrados</small>
+                        <strong>@Model.CantidadPagos</strong>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="rf-indicador">
+                        <small>Monto registrado</small>
+                        <strong>Q @Model.TotalRegistrado.ToString("N2")</strong>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="rf-indicador">
+                        <small>Monto pagado</small>
+                        <strong>Q @Model.TotalPagado.ToString("N2")</strong>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="rf-indicador">
+                        <small>Otros estados</small>
+                        <strong>Q @Model.TotalOtrosEstados.ToString("N2")</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detalle de pagos -->
+        <section class="rf-tarjeta">
+            <h2 class="rf-seccion">Detalle de pagos</h2>
+            @if (Model.Pagos.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    No se encontraron pagos para los filtros seleccionados.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="rf-tabla">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Fundación</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pago in Model.Pagos)
+                            {
+                                <tr>
+                                    <td>@pago.IdPagoFundacion</td>
+                                    <td>@pago.FechaPago.ToString("dd/MM/yyyy")</td>
+                                    <td>@(pago.Fundacion?.Nombre ?? "Sin información")</td>
+                                    <td>@(string.IsNullOrWhiteSpace(pago.Descripcion) ? "Sin descripción" : pago.Descripcion)</td>
+                                    <td>@pago.Estado</td>
+                                    <td class="text-end rf-monto">Q @pago.Monto.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-end">Total registrado</td>
+                                <td class="text-end rf-monto">Q @Model.TotalRegistrado.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <div class="rf-nota">
+            <strong>Nota:</strong> este reporte muestra pagos registrados.
+            Los montos en otros estados no representan necesariamente deudas pendientes.
+        </div>
+
+        <p class="text-center text-muted small mt-3">
+            Asilo Cabeza de Algodón | Sistema de Administración | Reporte generado automáticamente
+        </p>
+    }
+</div>

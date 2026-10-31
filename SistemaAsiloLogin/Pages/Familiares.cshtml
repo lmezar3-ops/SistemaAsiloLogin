@@ -1,0 +1,168 @@
+﻿
+@page
+@model SistemaAsiloLogin.Pages.FamiliaresModel
+
+@{
+    ViewData["Title"] = "Registro de Familiares";
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h2 class="mb-0">Registro de Familiares</h2>
+
+    <a asp-page="/RelacionarFamiliares" class="btn btn-outline-primary">
+        Relacionar con pacientes
+    </a>
+</div>
+
+<p>Registra a los familiares y responsables de los pacientes del asilo.</p>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+@if (Model.ModoEdicion)
+{
+    <form method="post" asp-page-handler="Actualizar" class="card p-4 mb-4">
+        <h4>Editar familiar #@Model.Edicion.IdFamiliar</h4>
+
+        <input type="hidden" asp-for="Edicion.IdFamiliar" />
+
+        <div class="mb-3">
+            <label asp-for="Edicion.Nombres" class="form-label">Nombres</label>
+            <input asp-for="Edicion.Nombres" class="form-control" required maxlength="100" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Edicion.Apellidos" class="form-label">Apellidos</label>
+            <input asp-for="Edicion.Apellidos" class="form-control" required maxlength="100" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Edicion.Parentesco" class="form-label">Parentesco</label>
+            <input asp-for="Edicion.Parentesco" class="form-control" required maxlength="100" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Edicion.Telefono" class="form-label">Teléfono</label>
+            <input asp-for="Edicion.Telefono" class="form-control" maxlength="30" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Edicion.CorreoElectronico" class="form-label">Correo electrónico</label>
+            <input asp-for="Edicion.CorreoElectronico" type="email" class="form-control" maxlength="150" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Edicion.Direccion" class="form-label">Dirección</label>
+            <textarea asp-for="Edicion.Direccion" class="form-control" rows="2" maxlength="250"></textarea>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="Edicion.Estado" class="form-check-input" />
+            <label asp-for="Edicion.Estado" class="form-check-label">Familiar activo</label>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Guardar cambios</button>
+            <a asp-page="/Familiares" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+}
+else
+{
+    <form method="post" class="card p-4 mb-4">
+        <h4>Registrar familiar</h4>
+
+        <div class="mb-3">
+            <label asp-for="NuevoFamiliar.Nombres" class="form-label">Nombres</label>
+            <input asp-for="NuevoFamiliar.Nombres" class="form-control" required maxlength="100" />
+            <span asp-validation-for="NuevoFamiliar.Nombres" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NuevoFamiliar.Apellidos" class="form-label">Apellidos</label>
+            <input asp-for="NuevoFamiliar.Apellidos" class="form-control" required maxlength="100" />
+            <span asp-validation-for="NuevoFamiliar.Apellidos" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NuevoFamiliar.Parentesco" class="form-label">Parentesco</label>
+            <input asp-for="NuevoFamiliar.Parentesco" class="form-control" required maxlength="100"
+                   placeholder="Ej. Hijo, hija, hermano..." />
+            <span asp-validation-for="NuevoFamiliar.Parentesco" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NuevoFamiliar.Telefono" class="form-label">Teléfono (opcional)</label>
+            <input asp-for="NuevoFamiliar.Telefono" class="form-control" maxlength="30" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NuevoFamiliar.CorreoElectronico" class="form-label">Correo electrónico (opcional)</label>
+            <input asp-for="NuevoFamiliar.CorreoElectronico" type="email" class="form-control" maxlength="150" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NuevoFamiliar.Direccion" class="form-label">Dirección (opcional)</label>
+            <textarea asp-for="NuevoFamiliar.Direccion" class="form-control" rows="2" maxlength="250"></textarea>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="NuevoFamiliar.Estado" class="form-check-input" />
+            <label asp-for="NuevoFamiliar.Estado" class="form-check-label">Familiar activo</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar familiar</button>
+    </form>
+}
+
+<h4>Familiares registrados</h4>
+
+@if (Model.ListaFamiliares.Count == 0)
+{
+    <div class="alert alert-info">Todavía no hay familiares registrados.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Nombre completo</th>
+                    <th>Parentesco</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var familiar in Model.ListaFamiliares)
+                {
+                    <tr>
+                        <td>@familiar.Nombres @familiar.Apellidos</td>
+                        <td>@familiar.Parentesco</td>
+                        <td>@familiar.Telefono</td>
+                        <td>@familiar.CorreoElectronico</td>
+                        <td>@(familiar.Estado ? "Activo" : "Inactivo")</td>
+                        <td>
+                            <a asp-page="/Familiares"
+                               asp-route-editar="@familiar.IdFamiliar"
+                               class="btn btn-sm btn-primary">
+                                Editar
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

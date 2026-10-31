@@ -14,6 +14,8 @@ namespace SistemaAsiloLogin.Data
 
         public DbSet<Paciente> Pacientes { get; set; }
 
+        public DbSet<MedicacionHabitual> MedicacionesHabituales { get; set; }
+
         public DbSet<Familiar> Familiares { get; set; }
 
         public DbSet<PacienteFamiliar> PacientesFamiliares { get; set; }
@@ -63,11 +65,14 @@ namespace SistemaAsiloLogin.Data
 
             modelBuilder.Entity<Paciente>().ToTable("Paciente");
 
+            modelBuilder.Entity<Familiar>().ToTable("Familiar");
+            modelBuilder.Entity<PacienteFamiliar>().ToTable("PacienteFamiliar");
+
             modelBuilder.Entity<PacienteFamiliar>().HasKey(pf => new { pf.IdPaciente, pf.IdFamiliar });
 
             modelBuilder.Entity<PacienteFamiliar>().HasOne(pf => pf.Paciente)
-    .WithMany()
-    .HasForeignKey(pf => pf.IdPaciente);
+                .WithMany()
+                .HasForeignKey(pf => pf.IdPaciente);
 
             modelBuilder.Entity<PacienteFamiliar>().HasOne(pf => pf.Familiar)
                 .WithMany()
@@ -76,6 +81,23 @@ namespace SistemaAsiloLogin.Data
             modelBuilder.Entity<Especialidad>().ToTable("Especialidad");
 
             modelBuilder.Entity<Medico>().ToTable("Medico");
+
+            modelBuilder.Entity<Medico>()
+               .HasOne(m => m.Especialidad)
+               .WithMany()
+               .HasForeignKey(m => m.IdEspecialidad)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Medico>()
+                .HasOne(m => m.Usuario)
+                .WithMany()
+                .HasForeignKey(m => m.IdUsuario)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Medico>()
+                .HasIndex(m => m.IdUsuario)
+                .IsUnique()
+                .HasFilter("[idUsuario] IS NOT NULL");
 
             modelBuilder.Entity<Enfermero>().ToTable("Enfermero");
 
@@ -90,6 +112,8 @@ namespace SistemaAsiloLogin.Data
             modelBuilder.Entity<ResultadoExamen>().ToTable("ResultadoExamen");
 
             modelBuilder.Entity<Tratamiento>().ToTable("Tratamiento");
+
+            modelBuilder.Entity<MedicacionHabitual>().ToTable("MedicacionHabitual");
 
             modelBuilder.Entity<Fundacion>().ToTable("Fundacion");
 

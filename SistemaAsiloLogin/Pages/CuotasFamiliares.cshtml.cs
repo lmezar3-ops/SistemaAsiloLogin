@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using SistemaAsiloLogin.Models;
 
 namespace SistemaAsiloLogin.Pages
 {
+    [Authorize(Roles = "Administrador,CajaFinanzas")]
     public class CuotasFamiliaresModel : PageModel
     {
         private readonly AsiloDbContext _context;

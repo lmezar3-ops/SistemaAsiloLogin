@@ -1,76 +1,230 @@
-﻿
-body {
-    background-color: #eef3ef;
-    font-family: Arial, sans-serif;
-    color: #394943;
-}
+﻿/* =========================================
+   REGISTRO DE PACIENTES
+   Diseño horizontal adaptable
+   ========================================= */
 
 .registro-container {
     display: flex;
     justify-content: center;
-    margin-top: center;
+    align-items: flex-start;
+    width: 100%;
     min-height: 75vh;
+    padding: 1.25rem;
+    box-sizing: border-box;
 }
 
 .registro-box {
-    background-color: #ffffff;
-    border: 1px solid #d5e0d9;
-    padding: 35px;
-    width: 380px;
+    --registro-azul: #1E293B;
+    --registro-celeste: #EAF6FC;
+    --registro-naranja: #F97316;
+    --registro-borde: #D5E5EF;
+
+    width: 100%;
+    max-width: 1400px;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid var(--registro-borde);
+    border-top: 5px solid var(--registro-naranja);
     border-radius: 16px;
-    box-shadow: 0px 8px 25px rgba(70, 90, 80, 0.15);
+    box-shadow: 0 8px 25px rgba(30, 41, 59, 0.10);
+    color: #334155;
 }
 
-    .registro-box h1 {
-        text-align: center;
-        margin-bottom: 25px;
-        color: #496b5a;
-        font-size: 28px;
-    }
+.registro-box h1 {
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.8rem;
+    color: var(--registro-azul);
+    border-bottom: 1px solid var(--registro-borde);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
 
-    .registro-box label {
-        display: block;
-        margin-top: 15px;
-        margin-bottom: 6px;
-        font-weight: bold;
-        color: #4d5d57;
-    }
+.registro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem 1rem;
+}
 
-    .registro-box input {
-        box-sizing: border-box;
-        width: 100%;
-        padding: 11px;
-        border: 1px solid #cbd8d0;
-        border-radius: 8px;
-        background-color: #f8faf8;
-        font-size: 15px;
-        outline: none;
-    }
+.campo-registro {
+    min-width: 0;
+}
 
-        .registro-box input:focus {
-            border-color: #7da58c;
-            box-shadow: 0px 0px 5px rgba(125, 165, 140, 0.3);
-        }
+.campo-registro.campo-amplio {
+    grid-column: span 1;
+}
 
-    .registro-box button {
-        width: 100%;
-        margin-top: 25px;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        background-color: #6f927d;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-    }
+.registro-box label {
+    display: block;
+    margin: 0 0 0.35rem;
+    color: var(--registro-azul);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
 
-        .registro-box button:hover {
-            background-color: #5d806b;
-        }
+.registro-box input,
+.registro-box select,
+.registro-box textarea {
+    display: block;
+    width: 100%;
+    min-height: 40px;
+    padding: 0.55rem 0.7rem;
+    box-sizing: border-box;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #334155;
+    font: inherit;
+    font-size: 0.94rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.registro-box textarea {
+    min-height: 76px;
+    resize: vertical;
+}
+
+.registro-box input:focus,
+.registro-box select:focus,
+.registro-box textarea:focus {
+    outline: none;
+    border-color: #38A3D1;
+    box-shadow: 0 0 0 3px rgba(56, 163, 209, 0.16);
+}
+
+.registro-box input::placeholder,
+.registro-box textarea::placeholder {
+    color: #94A3B8;
+}
+
+.registro-box hr {
+    margin: 1.4rem 0;
+    border: 0;
+    border-top: 1px solid var(--registro-borde);
+}
+
+.medicaciones-habituales {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #F8FCFE;
+    border: 1px solid var(--registro-borde);
+    border-radius: 12px;
+}
+
+.medicaciones-habituales h2 {
+    margin: 0 0 0.5rem;
+    color: var(--registro-azul);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.medicaciones-habituales p {
+    margin: 0 0 1rem;
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.fila-medicacion-habitual {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #FFFFFF;
+    border: 1px solid var(--registro-borde);
+    border-radius: 10px;
+}
+
+.fila-medicacion-habitual h3 {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--registro-azul);
+    font-size: 1rem;
+}
+
+.fila-medicacion-habitual label {
+    margin-top: 0;
+}
+
+.fila-medicacion-habitual textarea {
+    min-height: 60px;
+}
+
+.fila-medicacion-habitual .medicacion-informado,
+.fila-medicacion-habitual .medicacion-indicaciones {
+    grid-column: span 2;
+}
+
+.registro-box button {
+    min-height: 42px;
+    margin-top: 0.75rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--registro-naranja);
+    border-radius: 8px;
+    background: var(--registro-naranja);
+    color: #FFFFFF;
+    font-size: 0.94rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.registro-box button:hover {
+    background: #EA580C;
+    border-color: #EA580C;
+    transform: translateY(-1px);
+}
+
+.registro-box button:focus-visible {
+    outline: 3px solid rgba(56, 163, 209, 0.4);
+    outline-offset: 3px;
+}
+
+.medicaciones-habituales button {
+    width: auto;
+}
 
 #mensaje {
-    margin-top: 18px;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 8px;
     text-align: center;
-    font-weight: bold;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1000px) {
+    .registro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fila-medicacion-habitual {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .registro-container {
+        padding: 0.5rem;
+    }
+
+    .registro-box {
+        padding: 1rem;
+    }
+
+    .registro-box h1 {
+        font-size: 1.45rem;
+    }
+
+    .registro-grid,
+    .fila-medicacion-habitual {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .campo-registro.campo-amplio,
+    .fila-medicacion-habitual .medicacion-informado,
+    .fila-medicacion-habitual .medicacion-indicaciones {
+        grid-column: auto;
+    }
 }

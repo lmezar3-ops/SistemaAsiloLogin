@@ -5,70 +5,120 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/registro.css" />
+    <link rel="stylesheet" href="~/css/registro.css" asp-append-version="true" />
 }
 
 <div class="registro-container">
-
     <div class="registro-box">
-
         <h1>Registro de Pacientes</h1>
 
-        <label>Nombres</label>
-        <input type="text" id="nombres">
+        <div class="registro-grid">
+            <div class="campo-registro">
+                <label for="nombres">Nombres</label>
+                <input type="text" id="nombres" />
+            </div>
 
-        <label>Apellidos</label>
-        <input type="text" id="apellidos">
+            <div class="campo-registro">
+                <label for="apellidos">Apellidos</label>
+                <input type="text" id="apellidos" />
+            </div>
 
-        <label>Fecha de nacimiento</label>
-        <input type="date" id="fechaNacimiento">
+            <div class="campo-registro">
+                <label for="fechaNacimiento">Fecha de nacimiento</label>
+                <input type="date" id="fechaNacimiento" />
+            </div>
 
-        <div class="form-group"> 
-        <label for="dpi">DPI del paciente</label>
-        <input
-            type="text" 
-            id="dpi" 
-            name="dpi"
-            maxlength="13"
-            minlength="13" 
-            inputmode="numeric"
-            pattern="[0-9]{13}"
-            autocomplete="off"
-            placeholder="Ingrese los 13 dígitos del DPI" required /> 
+            <div class="campo-registro">
+                <label for="dpi">DPI del paciente</label>
+                <input
+                    type="text"
+                    id="dpi"
+                    name="dpi"
+                    maxlength="13"
+                    minlength="13"
+                    inputmode="numeric"
+                    pattern="[0-9]{13}"
+                    autocomplete="off"
+                    placeholder="Ingrese los 13 dígitos del DPI"
+                    required />
+            </div>
+
+            <div class="campo-registro">
+                <label for="sexo">Sexo</label>
+                <select id="sexo">
+                    <option value="">Seleccione...</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+            </div>
+
+            <div class="campo-registro">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" />
+            </div>
+
+            <div class="campo-registro">
+                <label for="direccion">Dirección</label>
+                <input type="text" id="direccion" />
+            </div>
+
+            <div class="campo-registro">
+                <label for="fechaIngreso">Fecha de ingreso</label>
+                <input type="date" id="fechaIngreso" />
+            </div>
+
+            <div class="campo-registro">
+                <label for="estado">Estado</label>
+                <select id="estado">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+
+            <div class="campo-registro">
+                <label for="motivoIngreso">Motivo de ingreso *</label>
+                <textarea
+                    id="motivoIngreso"
+                    rows="3"
+                    maxlength="500"
+                    required
+                    placeholder="Describa el motivo documentado del ingreso"></textarea>
+            </div>
+
+            <div class="campo-registro">
+                <label for="psicopatologia">Psicopatología</label>
+                <textarea
+                    id="psicopatologia"
+                    rows="3"
+                    placeholder="Información registrada en la evaluación correspondiente"></textarea>
+            </div>
         </div>
 
-        <label>Sexo</label>
-        <select id="sexo">
-            <option value="">Seleccione...</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-        </select>
+        <hr />
 
-        <label>Dirección</label>
-        <input type="text" id="direccion">
+        <section class="medicaciones-habituales">
+            <h2>Medicación habitual del paciente</h2>
+            <p>
+                Registre los medicamentos que el paciente informa que toma
+                habitualmente. El personal de salud debe verificar la información
+                antes de utilizarla para decisiones clínicas.
+            </p>
 
-        <label>Teléfono</label>
-        <input type="text" id="telefono">
+            <div id="listaMedicacionesHabituales"></div>
 
-        <label>Fecha de ingreso</label>
-        <input type="date" id="fechaIngreso">
+            <button type="button" id="agregarMedicacionHabitual">
+                + Agregar otra medicación
+            </button>
+        </section>
 
-        <label>Estado</label>
-        <select id="estado">
-            <option value="1">Activo</option>
-            <option value="0">Inactivo</option>
-        </select>
-
-        <button onclick="registrarAnciano()">
+        <button type="button" onclick="registrarAnciano()">
             Guardar Paciente
         </button>
 
         <p id="mensaje"></p>
-
     </div>
-
 </div>
 
 @section Scripts {
-    <script src="~/js/registro.js"></script>
+    <script src="~/js/registro.js" asp-append-version="true"></script>
 }

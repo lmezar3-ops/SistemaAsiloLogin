@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaAsiloLogin.Models
@@ -21,6 +21,8 @@ namespace SistemaAsiloLogin.Models
         public int Cantidad { get; set; }
 
         public string Indicaciones { get; set; } = "";
+
+        public string? EstadoEntrega { get; set; }
 
         [ForeignKey("IdVisita")]
         public VisitaMedica? VisitaMedica { get; set; }

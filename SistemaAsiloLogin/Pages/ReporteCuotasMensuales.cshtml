@@ -1,0 +1,818 @@
+﻿
+@page
+@model SistemaAsiloLogin.Pages.ReporteCuotasMensualesModel
+
+@{
+    ViewData["Title"] = "Reporte de cuotas mensuales";
+
+    var pacienteSeleccionado = Model.IdPaciente.HasValue
+        ? Model.Pacientes.FirstOrDefault(p =>
+            p.IdPaciente == Model.IdPaciente.Value)
+        : null;
+
+    bool esIndividual = pacienteSeleccionado != null;
+
+    string nombrePaciente = esIndividual
+        ? $"{pacienteSeleccionado!.Nombres} {pacienteSeleccionado.Apellidos}"
+        : "Todos los pacientes";
+
+    string tipoReporte = esIndividual
+        ? "REPORTE INDIVIDUAL"
+        : "REPORTE GENERAL";
+
+    bool imprimir = Request.Query["imprimir"].ToString() == "1";
+}
+
+<style>
+    .cuotas-contenedor {
+        max-width: 1350px;
+        margin: 25px auto;
+        color: #1e293b;
+    }
+
+    .cuotas-titulo {
+        color: #f97316;
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+
+    .cuotas-subtitulo {
+        color: #64748b;
+        font-size: .95rem;
+    }
+
+    .cuotas-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(15,23,42,.07);
+        overflow: hidden;
+    }
+
+    .cuotas-card-body {
+        padding: 22px;
+    }
+
+    .cuotas-card-titulo {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.1rem;
+        margin-bottom: 18px;
+    }
+
+    .cuotas-btn {
+        background: #f97316;
+        border: none;
+        color: white;
+        font-weight: 700;
+    }
+
+    .cuotas-btn:hover {
+        background: #ea580c;
+        color: white;
+    }
+
+    /* DOCUMENTO DEL REPORTE */
+    .cuotas-documento {
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 5px 18px rgba(15,23,42,.09);
+        border: 1px solid #dbe4ee;
+    }
+
+    .cuotas-documento-header {
+        background: #1e293b;
+        color: white;
+        padding: 26px 30px;
+        border-bottom: 5px solid #f97316;
+    }
+
+    .cuotas-documento-header h2 {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 8px;
+    }
+
+    .cuotas-institucion {
+        color: #fdba74;
+        font-size: .9rem;
+        font-weight: 700;
+        letter-spacing: .5px;
+        margin-bottom: 8px;
+    }
+
+    .cuotas-tipo {
+        display: inline-block;
+        border: 1px solid #fb923c;
+        color: #fdba74;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: .76rem;
+        font-weight: 800;
+        letter-spacing: .5px;
+    }
+
+    .cuotas-documento-body {
+        padding: 26px;
+    }
+
+    .cuotas-seccion {
+        margin-bottom: 26px;
+    }
+
+    .cuotas-seccion-titulo {
+        background: #1e293b;
+        color: white;
+        border-left: 5px solid #f97316;
+        padding: 12px 16px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
+
+    .cuotas-informacion {
+        background: #f1f7fb;
+        border: 1px solid #dbeafe;
+        border-radius: 10px;
+        padding: 18px 20px;
+    }
+
+    .cuotas-info-label {
+        color: #64748b;
+        font-size: .8rem;
+        margin-bottom: 4px;
+    }
+
+    .cuotas-info-valor {
+        color: #1e293b;
+        font-size: .96rem;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .cuotas-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0;
+    }
+
+    .cuotas-tabla th {
+        background: #1e293b;
+        color: white;
+        padding: 12px;
+        border: 1px solid #334155;
+        font-size: .85rem;
+    }
+
+    .cuotas-tabla td {
+        padding: 12px;
+        border: 1px solid #dbe4ee;
+        font-size: .88rem;
+        vertical-align: middle;
+    }
+
+    .cuotas-tabla tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    .cuotas-tabla tfoot td {
+        background: #eaf3fa;
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+    .cuotas-total-destacado {
+        color: #ea580c;
+        font-weight: 800;
+    }
+
+    .cuotas-estado-pagada {
+        color: #15803d;
+        font-weight: 800;
+    }
+
+    .cuotas-estado-parcial {
+        color: #b45309;
+        font-weight: 800;
+    }
+
+    .cuotas-estado-pendiente {
+        color: #b91c1c;
+        font-weight: 800;
+    }
+
+    .cuotas-nota {
+        background: #fff7ed;
+        border-left: 4px solid #f97316;
+        padding: 14px 18px;
+        border-radius: 6px;
+        font-size: .82rem;
+        color: #475569;
+    }
+
+    .cuotas-pie {
+        border-top: 1px solid #e2e8f0;
+        margin-top: 24px;
+        padding-top: 12px;
+        text-align: center;
+        color: #64748b;
+        font-size: .75rem;
+    }
+
+    
+/* ENCABEZADO PRINCIPAL UNIFICADO */
+
+.cuotas-encabezado-unico {
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .15);
+}
+
+.cuotas-titulo-principal {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.cuotas-descripcion-principal {
+    color: #cbd5e1;
+    font-size: .93rem;
+    margin-bottom: 12px;
+}
+
+.btn-volver-naranja {
+    background: #f97316;
+    border: 1px solid #f97316;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.btn-volver-naranja:hover {
+    background: #ea580c;
+    border-color: #ea580c;
+    color: #ffffff;
+}
+
+@@media screen and (max-width: 767px) {
+    .cuotas-titulo-principal {
+        font-size: 1.4rem;
+    }
+}
+
+
+    @@page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+   @@media print {
+
+    .no-imprimir {
+        display: none !important;
+    }
+
+    .cuotas-encabezado-unico {
+        margin-bottom: 12px !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .cuotas-titulo-principal {
+        color: #ffffff !important;
+    }
+
+}
+
+        .navbar,
+        .sidebar,
+        .navbar-nav {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+            margin: 0 !important;
+        }
+
+        .cuotas-contenedor {
+            margin: 0;
+            max-width: 100%;
+            padding: 0 !important;
+        }
+
+        .cuotas-documento {
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0;
+        }
+
+        .cuotas-documento-header {
+            padding: 18px 22px;
+        }
+
+        .cuotas-documento-body {
+            padding: 18px 10px;
+        }
+
+        .cuotas-seccion {
+            margin-bottom: 18px;
+        }
+
+        .cuotas-tabla th,
+        .cuotas-tabla td {
+            font-size: 10px;
+            padding: 7px;
+        }
+
+        .cuotas-documento-header,
+        .cuotas-seccion-titulo,
+        .cuotas-tabla th,
+        .cuotas-tabla tfoot td,
+        .cuotas-informacion {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        tr {
+            break-inside: avoid;
+        }
+
+        .cuotas-informacion,
+        .cuotas-nota {
+            break-inside: avoid;
+        }
+    }
+</style>
+
+<div class="container-fluid cuotas-contenedor">
+
+  
+<!-- ENCABEZADO PRINCIPAL -->
+<div class="cuotas-documento-header cuotas-encabezado-unico mb-4">
+
+    <div class="d-flex flex-wrap justify-content-between
+                align-items-center gap-3">
+
+        <div>
+            <div class="cuotas-institucion">
+                ASILO CABEZA DE ALGODÓN
+            </div>
+
+            <h1 class="cuotas-titulo-principal">
+                Reporte de cuotas mensuales
+            </h1>
+
+            <p class="cuotas-descripcion-principal">
+                Control financiero de cuotas familiares,
+                pagos y saldos pendientes.
+            </p>
+
+            <span class="cuotas-tipo">
+                @tipoReporte
+            </span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 no-imprimir">
+
+            <a asp-page="/Reportes"
+               class="btn btn-volver-naranja">
+                Volver a reportes
+            </a>
+
+            <button type="submit"
+                    form="formFiltrosCuotas"
+                    name="imprimir"
+                    value="1"
+                    class="btn btn-success fw-bold">
+                Imprimir / Guardar PDF
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <!-- FILTROS -->
+    <div class="cuotas-card mb-4 no-imprimir">
+        <div class="cuotas-card-body">
+
+            <h2 class="cuotas-card-titulo">
+                Filtros del reporte
+            </h2>
+
+            <form id="formFiltrosCuotas"
+                  method="get"
+                  class="row g-3">
+
+                <div class="col-md-5">
+
+                    <label class="form-label fw-semibold">
+                        Paciente
+                    </label>
+
+                  <select name="IdPaciente"
+                   class="form-select"
+                   onchange="this.form.requestSubmit()">
+
+                        <option value="">
+                            Todos los pacientes
+                        </option>
+
+                        @foreach (var paciente in Model.Pacientes)
+                        {
+                            if (Model.IdPaciente == paciente.IdPaciente)
+                            {
+                                <option value="@paciente.IdPaciente"
+                                        selected>
+                                    @paciente.Nombres @paciente.Apellidos
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@paciente.IdPaciente">
+                                    @paciente.Nombres @paciente.Apellidos
+                                </option>
+                            }
+                        }
+
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+                        Mes y año
+                    </label>
+
+                <input type="month"
+                 name="Periodo"
+                 class="form-control"
+                 value="@Model.Periodo"
+                 onchange="this.form.requestSubmit()"
+                 required />
+
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+
+                    <button type="submit"
+                            class="btn cuotas-btn w-100">
+                        Consultar reporte
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+    else
+    {
+        <!-- DOCUMENTO PARA PANTALLA Y PDF -->
+        <div class="cuotas-documento">
+
+            <div class="cuotas-documento-body">
+
+                <!-- INFORMACIÓN DEL REPORTE -->
+                <section class="cuotas-seccion">
+
+                    <h3 class="cuotas-seccion-titulo">
+                        Información del reporte
+                    </h3>
+
+                    <div class="cuotas-informacion">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <div class="cuotas-info-label">
+                                    Tipo de consulta
+                                </div>
+
+                                <div class="cuotas-info-valor">
+                                    @(esIndividual
+                                        ? "Reporte por paciente"
+                                        : "Reporte general de pacientes")
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="cuotas-info-label">
+                                    Paciente
+                                </div>
+
+                                <div class="cuotas-info-valor">
+                                    @nombrePaciente
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="cuotas-info-label">
+                                    Período
+                                </div>
+
+                                <div class="cuotas-info-valor">
+                                    @Model.NombrePeriodo
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="cuotas-info-label">
+                                    Fecha de corte
+                                </div>
+
+                                <div class="cuotas-info-valor">
+                                    @Model.FechaCorte.ToString("dd/MM/yyyy")
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="cuotas-info-label">
+                                    Fecha de emisión
+                                </div>
+
+                                <div class="cuotas-info-valor">
+                                    @Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- RESUMEN FINANCIERO -->
+                <section class="cuotas-seccion">
+
+                    <h3 class="cuotas-seccion-titulo">
+                        Resumen financiero
+                    </h3>
+
+                    <div class="table-responsive">
+
+                        <table class="cuotas-tabla">
+
+                            <thead>
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th class="text-end">Valor</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td>Cuotas registradas</td>
+                                    <td class="text-end">
+                                        @Model.CantidadCuotas
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Monto total de cuotas</td>
+                                    <td class="text-end">
+                                        Q @Model.TotalCuotas.ToString("N2")
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Total de pagos aplicados</td>
+                                    <td class="text-end">
+                                        Q @Model.TotalPagado.ToString("N2")
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Cuotas pagadas</td>
+                                    <td class="text-end">
+                                        @Model.CuotasPagadas
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Cuotas con pago parcial</td>
+                                    <td class="text-end">
+                                        @Model.CuotasParciales
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Cuotas pendientes de pago</td>
+                                    <td class="text-end">
+                                        @Model.CuotasPendientes
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td>SALDO TOTAL PENDIENTE</td>
+
+                                    <td class="text-end cuotas-total-destacado">
+                                        Q @Model.TotalPendiente.ToString("N2")
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <!-- DETALLE -->
+                <section class="cuotas-seccion">
+
+                    <h3 class="cuotas-seccion-titulo">
+                        @(esIndividual
+                            ? "Detalle de cuotas del paciente"
+                            : "Detalle general de cuotas familiares")
+                    </h3>
+
+                    @if (Model.Detalles.Count == 0)
+                    {
+                        <div class="alert alert-info">
+                            No se encontraron cuotas para los filtros seleccionados.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+
+                            <table class="cuotas-tabla">
+
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Paciente</th>
+                                        <th>Fecha</th>
+                                        <th class="text-end">Cuota</th>
+                                        <th class="text-end">Pagado</th>
+                                        <th class="text-end">Pendiente</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var cuota in Model.Detalles)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @cuota.IdCuota
+                                            </td>
+
+                                            <td>
+                                                @cuota.Paciente
+                                            </td>
+
+                                            <td>
+                                                @cuota.FechaCuota.ToString("dd/MM/yyyy")
+                                            </td>
+
+                                            <td class="text-end">
+                                                Q @cuota.Monto.ToString("N2")
+                                            </td>
+
+                                            <td class="text-end">
+                                                Q @cuota.Pagado.ToString("N2")
+                                            </td>
+
+                                            <td class="text-end">
+                                                Q @cuota.Pendiente.ToString("N2")
+                                            </td>
+
+                                            <td>
+                                                @if (cuota.EstadoCalculado == "Pagada")
+                                                {
+                                                    <span class="cuotas-estado-pagada">
+                                                        Pagada
+                                                    </span>
+                                                }
+                                                else if (cuota.EstadoCalculado == "Parcial")
+                                                {
+                                                    <span class="cuotas-estado-parcial">
+                                                        Parcial
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="cuotas-estado-pendiente">
+                                                        Pendiente
+                                                    </span>
+                                                }
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                                <tfoot>
+                                    <tr>
+
+                                        <td colspan="3" class="text-end">
+                                            TOTALES
+                                        </td>
+
+                                        <td class="text-end">
+                                            Q @Model.TotalCuotas.ToString("N2")
+                                        </td>
+
+                                        <td class="text-end">
+                                            Q @Model.TotalPagado.ToString("N2")
+                                        </td>
+
+                                        <td class="text-end">
+                                            Q @Model.TotalPendiente.ToString("N2")
+                                        </td>
+
+                                        <td></td>
+
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+
+                        </div>
+                    }
+
+                </section>
+
+                @if (Model.TotalExcedente > 0)
+                {
+                    <div class="alert alert-warning">
+                        Se detectaron pagos superiores al monto de
+                        algunas cuotas. Excedente total:
+                        Q @Model.TotalExcedente.ToString("N2").
+                    </div>
+                }
+
+                <!-- OBSERVACIONES -->
+                <div class="cuotas-nota">
+
+                    <strong>Observaciones:</strong>
+
+                    Este documento presenta las cuotas correspondientes
+                    al período seleccionado y los pagos registrados
+                    hasta su fecha de corte.
+
+                    Los estados se calculan a partir de los pagos
+                    aplicados a cada cuota. El reporte es únicamente
+                    informativo y no modifica los registros financieros.
+
+                </div>
+
+                <!-- PIE -->
+                <div class="cuotas-pie">
+                    Asilo Cabeza de Algodón |
+                    Sistema de Administración |
+                    Reporte generado automáticamente
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@if (imprimir && ViewData.ModelState.IsValid)
+{
+    <script>
+        window.addEventListener("load", function () {
+            window.print();
+        });
+    </script>
+}

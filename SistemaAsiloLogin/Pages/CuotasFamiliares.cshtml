@@ -5,11 +5,24 @@
     ViewData["Title"] = "Cuotas Familiares";
 }
 
-<h2>Cuotas Familiares</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/css/solicitudes-citas.css" asp-append-version="true" />
+}
 
-<form method="post">
+<div class="modulo-medico">
+    <a asp-page="/CajaPagos" class="btn btn-outline-secondary mb-3"> 
+    ← Volver a Caja y Pagos
+</a>
+    <div class="modulo-encabezado">
+        <h2>Cuotas Familiares</h2>
+        <p class="modulo-descripcion">
+            Registra las cuotas familiares y consulta sus montos y estados.
+        </p>
+    </div>
 
-    <div>
+<form method="post" class="formulario-modulo">
+
+   <div class="campo-modulo">
         <label>Paciente</label>
 
         <select asp-for="Cuota.IdPaciente">
@@ -28,14 +41,14 @@
         </select>
     </div>
 
-    <div>
+    <div class="campo-modulo">
         <label>Fecha de la cuota</label>
 
         <input asp-for="Cuota.FechaCuota"
                type="date" />
     </div>
 
-    <div>
+    <div class="campo-modulo">
         <label>Monto</label>
 
         <input asp-for="Cuota.Monto"
@@ -43,7 +56,7 @@
                step="0.01" />
     </div>
 
-    <div>
+    <div class="campo-modulo">
         <label>Estado</label>
 
         <select asp-for="Cuota.Estado">
@@ -59,17 +72,18 @@
         </select>
     </div>
 
-    <button type="submit">
-        Registrar Cuota
-    </button>
+  <button type="submit" class="btn-modulo campo-completo">
+    Registrar Cuota
+</button>>
 
 </form>
 
 <hr />
 
-<h3>Cuotas Registradas</h3>
+<h3 class="seccion-registros">Cuotas Registradas</h3>
 
-<table>
+<div class="tabla-responsive">
+    <table class="tabla-modulo">
 
     <thead>
 
@@ -111,6 +125,7 @@
             </tr>
         }
 
-    </tbody>
-
-</table>
+       </tbody>
+    </table>
+</div>
+</div>

@@ -5,76 +5,90 @@
     ViewData["Title"] = "Visitas Médicas";
 }
 
-<h2>Visitas Médicas</h2>
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/solicitudes-citas.css"
+          asp-append-version="true" />
+}
 
-<form method="post">
+<div class="modulo-medico">
 
-    <div>
+<div class="modulo-encabezado">
+        <h2>Visitas Médicas</h2>
+        <p class="modulo-descripcion">
+            Registra y consulta las visitas de atención médica.
+        </p>
+    </div>
+
+<form method="post" class="formulario-modulo">
+
+    <div class="campo-modulo">
 
         <label>Cita Médica</label>
 
-        <select asp-for="Visita.IdCita">
-            <option value="">Seleccione una cita</option>
+        
+<select asp-for="Visita.IdCita">
+    <option value="">Seleccione una cita</option>
 
-            @foreach (var cita in Model.Citas)
-            {
-                <option value="@cita.IdCita">
-                    Cita #@cita.IdCita -
-                    @cita.SolicitudMedica?.Paciente?.Nombres
-                    @cita.SolicitudMedica?.Paciente?.Apellidos
-                    -
-                    @cita.Medico?.Nombres
-                    @cita.Medico?.Apellidos
-                    -
-                    @cita.FechaCita.ToString("dd/MM/yyyy HH:mm")
-                </option>
-            }
+    @foreach (var cita in Model.Citas)
+    {
+        <option value="@cita.IdCita"
+                data-paciente="@(cita.SolicitudMedica?.Paciente == null
+                    ? ""
+                    : cita.SolicitudMedica.Paciente.Nombres + " " +
+                      cita.SolicitudMedica.Paciente.Apellidos)"
+                data-medico="@(cita.Medico == null
+                    ? ""
+                    : cita.Medico.Nombres + " " +
+                      cita.Medico.Apellidos)">
 
-        </select>
+            Cita #@cita.IdCita -
+            @cita.SolicitudMedica?.Paciente?.Nombres
+            @cita.SolicitudMedica?.Paciente?.Apellidos -
+            @cita.Medico?.Nombres
+            @cita.Medico?.Apellidos -
+            @cita.FechaCita.ToString("dd/MM/yyyy HH:mm")
 
-    </div>
-
-    <div>
-
-        <label>Paciente</label>
-
-        <select asp-for="Visita.IdPaciente">
-
-            <option value="">Seleccione un paciente</option>
-
-            @foreach (var cita in Model.Citas)
-            {
-                <option value="@cita.SolicitudMedica?.IdPaciente">
-                    @cita.SolicitudMedica?.Paciente?.Nombres
-                    @cita.SolicitudMedica?.Paciente?.Apellidos
-                </option>
-            }
-
-        </select>
+        </option>
+    }
+</select>
 
     </div>
 
-    <div>
 
-        <label>Médico</label>
+<div class="campo-modulo">
 
-        <select asp-for="Visita.IdMedico">
+    <label>Paciente asignado</label>
 
-            <option value="">Seleccione un médico</option>
+    <input type="text"
+           id="pacienteAsignado"
+           readonly
+           placeholder="Seleccione primero una cita médica" />
 
-            @foreach (var cita in Model.Citas)
-            {
-                <option value="@cita.IdMedico">
-                    @cita.Medico?.Nombres
-                    @cita.Medico?.Apellidos
-                </option>
-            }
+    <small>
+        El paciente se obtiene automáticamente de la cita.
+    </small>
 
-        </select>
+</div>
 
-    </div>
 
-    <div>
+<div class="campo-modulo">
+
+    <label>Médico asignado</label>
+
+    <input type="text"
+           id="medicoAsignado"
+           readonly
+           placeholder="Seleccione primero una cita médica" />
+
+    <small>
+        El médico se obtiene automáticamente de la cita.
+    </small>
+
+</div>
+
+
+    <div class="campo-modulo">
 
         <label>Fecha de visita</label>
 
@@ -83,7 +97,7 @@
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Motivo de consulta</label>
 
@@ -93,7 +107,7 @@
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Diagnóstico</label>
 
@@ -103,7 +117,7 @@
 
     </div>
 
-    <div>
+    <div class="campo-modulo">
 
         <label>Observaciones</label>
 
@@ -113,16 +127,21 @@
 
     </div>
 
-    <button type="submit">
-        Registrar Visita
-    </button>
+
+    <div asp-validation-summary="All"
+     class="text-danger campo-completo"></div>
+
+   <button type="submit" class="btn-modulo campo-completo">
+    Registrar Visita
+</button>
 
 </form>
 
 
-<h3>Visitas Registradas</h3>
+<h3 class="seccion-registros">Visitas Registradas</h3>
 
-<table>
+<div class="tabla-responsive">
+    <table class="tabla-modulo">
 
     <thead>
 
@@ -185,3 +204,44 @@
     </tbody>
 
 </table>
+</div>
+</div>
+
+                    
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const citaSelect =
+                document.getElementById("Visita_IdCita");
+
+            const pacienteInput =
+                document.getElementById("pacienteAsignado");
+
+            const medicoInput =
+                document.getElementById("medicoAsignado");
+
+            function actualizarDatos() {
+
+                const opcion =
+                    citaSelect.options[citaSelect.selectedIndex];
+
+                const paciente =
+                    opcion?.getAttribute("data-paciente") || "";
+
+                const medico =
+                    opcion?.getAttribute("data-medico") || "";
+
+                pacienteInput.value = paciente;
+                medicoInput.value = medico;
+            }
+
+            citaSelect.addEventListener(
+                "change",
+                actualizarDatos
+            );
+
+            actualizarDatos();
+        });
+    </script>
+}

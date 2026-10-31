@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/MicroservicioAncianos/appsettings.json
+/SistemaAsiloLogin/appsettings.json
+*.bak*
+*.respaldo*
+/SistemaAsiloLogin/Respaldos/

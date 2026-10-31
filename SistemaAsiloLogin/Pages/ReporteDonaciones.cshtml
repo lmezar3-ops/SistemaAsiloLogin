@@ -1,0 +1,479 @@
+@page
+@model SistemaAsiloLogin.Pages.ReporteDonacionesModel
+
+@{
+    ViewData["Title"] = "Reporte de donaciones";
+}
+
+<style>
+    /* Diseño institucional del Centro de reportes */
+    .donaciones-reporte {
+        max-width: 1350px;
+        margin: 25px auto;
+        color: #1e293b;
+    }
+
+    .donaciones-reporte .don-encabezado {
+        background: #1e293b;
+        border-bottom: 5px solid #f97316;
+        color: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 22px;
+    }
+
+    .donaciones-reporte .don-institucion {
+        color: #fdba74;
+        font-size: .85rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .donaciones-reporte .don-encabezado h1 {
+        color: #ffffff !important;
+        font-size: 1.7rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .donaciones-reporte .don-subtitulo {
+        color: #cbd5e1;
+        margin: 0;
+    }
+
+    .donaciones-reporte .don-tarjeta {
+        background: #ffffff;
+        border: 1px solid #dbe4ee;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .donaciones-reporte .don-seccion {
+        background: #1e293b;
+        color: #ffffff !important;
+        border-left: 5px solid #f97316;
+        border-radius: 5px;
+        padding: 12px 15px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+
+    .donaciones-reporte .don-dato {
+        background: #edf6fb;
+        border-radius: 8px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .donaciones-reporte .don-dato small {
+        display: block;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+
+    .donaciones-reporte .don-dato strong {
+        color: #172b4d;
+        font-size: 1.05rem;
+        overflow-wrap: anywhere;
+    }
+
+    .donaciones-reporte .don-indicador strong {
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .donaciones-reporte .don-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .9rem;
+    }
+
+    .donaciones-reporte .don-tabla th {
+        background: #1e293b;
+        color: #ffffff !important;
+        border: 1px solid #334155;
+        padding: 10px;
+        vertical-align: middle;
+    }
+
+    .donaciones-reporte .don-tabla td {
+        border: 1px solid #dbe4ee;
+        padding: 10px;
+        vertical-align: top;
+        overflow-wrap: anywhere;
+    }
+
+    .donaciones-reporte .don-tabla tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    .donaciones-reporte .don-tabla tfoot td {
+        background: #edf6fb;
+        font-weight: 700;
+    }
+
+    .donaciones-reporte .don-moneda {
+        white-space: nowrap;
+    }
+
+    .donaciones-reporte .don-btn-volver {
+        background: #f97316;
+        border: 1px solid #f97316;
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .donaciones-reporte .don-btn-volver:hover {
+        background: #ea580c;
+        border-color: #ea580c;
+        color: #ffffff;
+    }
+
+    .donaciones-reporte .don-btn-consultar {
+        background: #f97316;
+        border-color: #f97316;
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .donaciones-reporte .don-btn-consultar:hover {
+        background: #ea580c;
+        border-color: #ea580c;
+        color: #ffffff;
+    }
+
+    @@page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    @@media print {
+        .no-imprimir,
+        .navbar,
+        .sidebar,
+        header:not(.don-encabezado),
+        footer {
+            display: none !important;
+        }
+
+        body {
+            background: #ffffff !important;
+        }
+
+        .donaciones-reporte {
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .donaciones-reporte .don-encabezado {
+            background: #ffffff !important;
+            color: #1e293b !important;
+            border: 1px solid #1e293b;
+            border-bottom: 3px solid #f97316;
+            border-radius: 0;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .donaciones-reporte .don-encabezado h1,
+        .donaciones-reporte .don-subtitulo {
+            color: #1e293b !important;
+        }
+
+        .donaciones-reporte .don-institucion {
+            color: #9a3412 !important;
+        }
+
+        .donaciones-reporte .don-tarjeta {
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .donaciones-reporte .don-seccion {
+            background: #edf2f7 !important;
+            color: #1e293b !important;
+            border-left: 4px solid #f97316;
+            padding: 7px 10px;
+            margin-bottom: 10px;
+        }
+
+        .donaciones-reporte .don-dato {
+            background: #f3f7fa !important;
+            padding: 9px;
+        }
+
+        .donaciones-reporte .don-indicador strong {
+            font-size: 13pt;
+        }
+
+        .donaciones-reporte .don-tabla {
+            font-size: 8.5pt;
+        }
+
+        .donaciones-reporte .don-tabla th {
+            background: #e8eef5 !important;
+            color: #1e293b !important;
+            border: 1px solid #8d9aac !important;
+        }
+
+        .donaciones-reporte .don-tabla th,
+        .donaciones-reporte .don-tabla td {
+            padding: 5px 6px;
+        }
+
+        .donaciones-reporte .don-tabla thead {
+            display: table-header-group;
+        }
+
+        .donaciones-reporte .don-tabla tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .donaciones-reporte .table-responsive {
+            overflow: visible !important;
+        }
+
+        .donaciones-reporte .don-encabezado,
+        .donaciones-reporte .don-informacion,
+        .donaciones-reporte .don-resumen {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .donaciones-reporte .don-encabezado,
+        .donaciones-reporte .don-seccion,
+        .donaciones-reporte .don-tabla th,
+        .donaciones-reporte .don-dato {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+</style>
+
+<div class="container-fluid donaciones-reporte">
+    <!-- Encabezado institucional -->
+    <div class="don-encabezado">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="don-institucion">ASILO CABEZA DE ALGODÓN</div>
+                <h1>Reporte de donaciones</h1>
+                <p class="don-subtitulo">Consulta de donaciones recibidas por donante, tipo y período.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2 no-imprimir">
+                <a asp-page="/Reportes" class="btn don-btn-volver">Volver a reportes</a>
+                <button type="button" class="btn btn-success fw-bold" onclick="window.print()">
+                    Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros: se mantienen los nombres originales de los parámetros -->
+    <div class="don-tarjeta no-imprimir">
+        <h2 class="h5 mb-3">Filtros del reporte</h2>
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="donIdDonante" class="form-label">Donante</label>
+                <select id="donIdDonante" name="IdDonante" class="form-select">
+                    <option value="">Todos los donantes</option>
+                    @foreach (var donante in Model.Donantes)
+                    {
+                        if (Model.IdDonante == donante.IdDonante)
+                        {
+                            <option value="@donante.IdDonante" selected>@donante.Nombre</option>
+                        }
+                        else
+                        {
+                            <option value="@donante.IdDonante">@donante.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="donTipo" class="form-label">Tipo de donación</label>
+                <select id="donTipo" name="TipoDonacion" class="form-select">
+                    <option value="">Todos los tipos</option>
+                    @foreach (var tipo in Model.TiposDonacion)
+                    {
+                        if (Model.TipoDonacion == tipo)
+                        {
+                            <option value="@tipo" selected>@tipo</option>
+                        }
+                        else
+                        {
+                            <option value="@tipo">@tipo</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="donFechaDesde" class="form-label">Fecha inicial</label>
+                <input id="donFechaDesde" type="date" name="FechaDesde" class="form-control"
+                       value="@(Model.FechaDesde?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="col-md-2">
+                <label for="donFechaHasta" class="form-label">Fecha final</label>
+                <input id="donFechaHasta" type="date" name="FechaHasta" class="form-control"
+                       value="@(Model.FechaHasta?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn don-btn-consultar w-100">Consultar</button>
+            </div>
+        </form>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+    else
+    {
+        <!-- Información del período y filtros aplicados -->
+        <section class="don-tarjeta don-informacion">
+            <h2 class="don-seccion">Información del reporte</h2>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="don-dato">
+                        <small>Donante / Tipo de donación</small>
+                        <strong>
+                            @(Model.Donantes.FirstOrDefault(d => d.IdDonante == Model.IdDonante)?.Nombre
+                                ?? "Todos los donantes")
+                            / @(string.IsNullOrWhiteSpace(Model.TipoDonacion) ? "Todos los tipos" : Model.TipoDonacion)
+                        </strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="don-dato">
+                        <small>Período consultado</small>
+                        <strong>@Model.FechaDesde?.ToString("dd/MM/yyyy") - @Model.FechaHasta?.ToString("dd/MM/yyyy")</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="don-dato">
+                        <small>Fecha de emisión</small>
+                        <strong>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resumen general -->
+        <section class="don-tarjeta don-resumen">
+            <h2 class="don-seccion">Resumen de donaciones</h2>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="don-dato don-indicador">
+                        <small>Donaciones registradas</small>
+                        <strong>@Model.CantidadDonaciones</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="don-dato don-indicador">
+                        <small>Donantes participantes</small>
+                        <strong>@Model.CantidadDonantes</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="don-dato don-indicador">
+                        <small>Total de donaciones</small>
+                        <strong class="don-moneda">Q @Model.TotalDonaciones.ToString("N2")</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resumen por tipo -->
+        <section class="don-tarjeta">
+            <h2 class="don-seccion">Resumen por tipo de donación</h2>
+            @if (Model.ResumenTipos.Count == 0)
+            {
+                <div class="alert alert-info mb-0">No hay información para el período seleccionado.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="don-tabla">
+                        <thead>
+                            <tr>
+                                <th>Tipo de donación</th>
+                                <th>Cantidad</th>
+                                <th class="text-end">Monto total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var resumen in Model.ResumenTipos)
+                            {
+                                <tr>
+                                    <td>@resumen.Tipo</td>
+                                    <td>@resumen.Cantidad</td>
+                                    <td class="text-end don-moneda">Q @resumen.Monto.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <!-- Detalle de donaciones -->
+        <section class="don-tarjeta">
+            <h2 class="don-seccion">Detalle de donaciones recibidas</h2>
+            @if (Model.Donaciones.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    No se encontraron donaciones para los filtros seleccionados.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="don-tabla">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Donante</th>
+                                <th>Tipo de donante</th>
+                                <th>Tipo de donación</th>
+                                <th>Descripción</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var donacion in Model.Donaciones)
+                            {
+                                <tr>
+                                    <td>@donacion.IdDonacion</td>
+                                    <td>@donacion.FechaDonacion.ToString("dd/MM/yyyy")</td>
+                                    <td>@(donacion.Donante?.Nombre ?? "Sin información")</td>
+                                    <td>@(donacion.Donante?.TipoDonante ?? "No especificado")</td>
+                                    <td>@donacion.TipoDonacion</td>
+                                    <td>@(string.IsNullOrWhiteSpace(donacion.Descripcion) ? "Sin descripción" : donacion.Descripcion)</td>
+                                    <td class="text-end don-moneda">Q @donacion.Monto.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="6" class="text-end">Total de donaciones</td>
+                                <td class="text-end don-moneda">Q @Model.TotalDonaciones.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <p class="text-center text-muted small mt-3">
+            Asilo Cabeza de Algodón | Sistema de Administración | Reporte generado automáticamente
+        </p>
+    }
+</div>

@@ -18,6 +18,8 @@ namespace SistemaAsiloLogin.Models
 
         public DateTime FechaSolicitud { get; set; }
 
+        [Required(ErrorMessage = "El motivo de la solicitud es obligatorio.")]
+        [StringLength(500, ErrorMessage = "El motivo no puede superar los 500 caracteres.")]
         public string Motivo { get; set; } = "";
 
         public string Estado { get; set; } = "Pendiente";

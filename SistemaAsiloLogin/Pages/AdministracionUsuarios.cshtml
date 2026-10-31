@@ -1,0 +1,257 @@
+﻿
+@page
+@model SistemaAsiloLogin.Pages.AdministracionUsuariosModel
+
+@{
+    ViewData["Title"] = "Administración de usuarios";
+}
+
+<div class="container mt-4 mb-5">
+    <h1>Administración de usuarios</h1>
+    <p>Registro y consulta de cuentas del sistema.</p>
+    <hr />
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger mb-3"></div>
+
+    <h3>Registrar nuevo usuario</h3>
+
+    <form method="post">
+        <div class="row g-3">
+
+            <div class="col-md-6" id="grupoNombreCompleto">
+                <label asp-for="NuevoUsuario.NombreCompleto"
+                       class="form-label">Nombre completo</label>
+                <input asp-for="NuevoUsuario.NombreCompleto"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.NombreCompleto"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6" id="grupoNombresMedico" hidden>
+                <label asp-for="NuevoUsuario.NombresMedico"
+                       class="form-label">Nombres del médico</label>
+                <input asp-for="NuevoUsuario.NombresMedico"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.NombresMedico"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6" id="grupoApellidosMedico" hidden>
+                <label asp-for="NuevoUsuario.ApellidosMedico"
+                       class="form-label">Apellidos del médico</label>
+                <input asp-for="NuevoUsuario.ApellidosMedico"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.ApellidosMedico"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.FechaNacimiento"
+                       class="form-label">Fecha de nacimiento</label>
+                <input asp-for="NuevoUsuario.FechaNacimiento"
+                       type="date" class="form-control" />
+                <span asp-validation-for="NuevoUsuario.FechaNacimiento"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.Area"
+                       class="form-label">Área</label>
+                <input asp-for="NuevoUsuario.Area"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.Area"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.Puesto"
+                       class="form-label">Puesto</label>
+                <input asp-for="NuevoUsuario.Puesto"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.Puesto"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.CorreoElectronico"
+                       class="form-label">Correo electrónico</label>
+                <input asp-for="NuevoUsuario.CorreoElectronico"
+                       type="email" class="form-control" />
+                <span asp-validation-for="NuevoUsuario.CorreoElectronico"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.Telefono"
+                       class="form-label">Teléfono (opcional)</label>
+                <input asp-for="NuevoUsuario.Telefono"
+                       type="tel" maxlength="20"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.Telefono"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.NombreUsuario"
+                       class="form-label">Nombre de usuario</label>
+                <input asp-for="NuevoUsuario.NombreUsuario"
+                       autocomplete="off" class="form-control" />
+                <span asp-validation-for="NuevoUsuario.NombreUsuario"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.Contraseña"
+                       class="form-label">Contraseña</label>
+                <input asp-for="NuevoUsuario.Contraseña"
+                       type="password"
+                       autocomplete="new-password"
+                       class="form-control" />
+                <span asp-validation-for="NuevoUsuario.Contraseña"
+                      class="text-danger"></span>
+                <small class="text-muted">
+                    Usa al menos 12 caracteres. No reutilices contraseñas.
+                </small>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NuevoUsuario.Rol"
+                       class="form-label">Rol</label>
+                <select asp-for="NuevoUsuario.Rol"
+                        id="selectorRol" class="form-select">
+                    <option value="">Seleccione un rol</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="MedicoGeneral">Médico general</option>
+                    <option value="Medico">Médico especialista</option>
+                    <option value="Enfermero">Enfermero</option>
+                    <option value="Fundacion">Fundación</option>
+                    <option value="Laboratorio">Laboratorio</option>
+                    <option value="Farmacia">Farmacia</option>
+                    <option value="CajaFinanzas">Caja y finanzas</option>
+                    <option value="Donaciones">Donaciones</option>
+                </select>
+                <span asp-validation-for="NuevoUsuario.Rol"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6" id="grupoEspecialidad" hidden>
+                <label asp-for="NuevoUsuario.IdEspecialidad"
+                       class="form-label">Especialidad médica</label>
+                <select asp-for="NuevoUsuario.IdEspecialidad"
+                        id="selectorEspecialidad"
+                        class="form-select" disabled>
+                    <option value="">Seleccione una especialidad</option>
+                    @foreach (var especialidad in Model.Especialidades)
+                    {
+                        <option value="@especialidad.IdEspecialidad">
+                            @especialidad.Nombre
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="NuevoUsuario.IdEspecialidad"
+                      class="text-danger"></span>
+                <small class="text-muted">
+                    Obligatoria para médicos especialistas.
+                </small>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    Registrar usuario
+                </button>
+                <a asp-page="/Dashboard" class="btn btn-secondary">
+                    Volver al menú
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <hr class="my-4" />
+
+    <h3>Usuarios registrados</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre completo</th>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Área</th>
+                    <th>Puesto</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model.Usuarios)
+                {
+                    <tr>
+                        <td>@usuario.IdUsuario</td>
+                        <td>@usuario.NombreCompleto</td>
+                        <td>@usuario.NombreUsuario</td>
+                        <td>@usuario.CorreoElectronico</td>
+                        <td>@usuario.Area</td>
+                        <td>@usuario.Puesto</td>
+                        <td>@usuario.Rol</td>
+                        <td>@(usuario.Estado ? "Activo" : "Inactivo")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            const rol = document.getElementById("selectorRol");
+            const grupoNombre = document.getElementById("grupoNombreCompleto");
+            const grupoNombres = document.getElementById("grupoNombresMedico");
+            const grupoApellidos = document.getElementById("grupoApellidosMedico");
+            const grupoEspecialidad = document.getElementById("grupoEspecialidad");
+            const especialidad = document.getElementById("selectorEspecialidad");
+
+            function actualizarFormulario() {
+                const esMedico = rol.value === "Medico";
+                const esMedicoGeneral = rol.value === "MedicoGeneral";
+                const requierePerfil = esMedico || esMedicoGeneral;
+
+                grupoNombre.hidden = requierePerfil;
+                grupoNombres.hidden = !requierePerfil;
+                grupoApellidos.hidden = !requierePerfil;
+
+                const nombreCompleto = document.getElementById(
+                    "NuevoUsuario_NombreCompleto");
+                const nombres = document.getElementById(
+                    "NuevoUsuario_NombresMedico");
+                const apellidos = document.getElementById(
+                    "NuevoUsuario_ApellidosMedico");
+
+                nombreCompleto.disabled = requierePerfil;
+                nombres.disabled = !requierePerfil;
+                apellidos.disabled = !requierePerfil;
+
+                grupoEspecialidad.hidden = !esMedico;
+                especialidad.disabled = !esMedico;
+
+                if (!esMedico) {
+                    especialidad.value = "";
+                }
+            }
+
+            rol.addEventListener("change", actualizarFormulario);
+            actualizarFormulario();
+        })();
+    </script>
+}

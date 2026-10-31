@@ -5,39 +5,49 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/login.css" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 }
 
 <div class="login-container">
-
     <div class="login-box">
 
-        <h1>Sistema del Asilo</h1>
+        <div class="login-brand">
+            <img src="~/images/LogoAsilo.jpg"
+                 alt="Logotipo del Asilo Cabeza de Algodón"
+                 class="login-logo" />
 
-        <label>Usuario</label>
-        <input type="text" id="usuario">
+            <h1>Sistema del Asilo</h1>
+            <p class="login-subtitle">Asilo Cabeza de Algodón</p>
+        </div>
 
-        <label>Contraseña</label>
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" autocomplete="username" />
+
+        <label for="password">Contraseña</label>
 
         <div class="password-container">
-            <input type="password" id="password">
+            <input type="password"
+                   id="password"
+                   autocomplete="current-password" />
 
             <button type="button"
                     id="togglePassword"
                     class="toggle-password"
-                    onclick="mostrarOcultarPassword()">
+                    onclick="mostrarOcultarPassword()"
+                    aria-label="Mostrar u ocultar contraseña">
                 👁️
             </button>
         </div>
 
-        <button onclick="iniciarSesion()">Iniciar Sesión</button>
+        <button type="button" onclick="iniciarSesion()">
+            Iniciar Sesión
+        </button>
 
-        <p id="mensaje"></p>
+        <p id="mensaje" role="status" aria-live="polite"></p>
 
     </div>
-
 </div>
 
 @section Scripts {
-    <script src="~/js/login.js"></script>
+    <script src="~/js/login.js" asp-append-version="true"></script>
 }

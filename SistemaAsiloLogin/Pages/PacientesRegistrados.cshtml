@@ -1,0 +1,116 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.PacientesRegistradosModel
+@{
+    ViewData["Title"] = "Pacientes Registrados";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pacientes-registrados.css" />
+}
+
+<div class="pacientes-container">
+    @if (TempData["MensajePaciente"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajePaciente"]
+    </div>
+}
+    <div class="pacientes-header">
+        <div>
+            <h1>Pacientes Registrados</h1>
+            <p>Consulta y búsqueda de pacientes del asilo.</p>
+        </div>
+
+        <a href="/RegistroAncianos" class="btn-nuevo">
+            + Registrar paciente
+        </a>
+    </div>
+
+    <form method="get" class="busqueda-form">
+        <input type="text"
+               name="buscar"
+               value="@Request.Query["buscar"]"
+               placeholder="Buscar por nombre, apellidos o DPI..." />
+
+        <button type="submit">Buscar</button>
+        <a href="/PacientesRegistrados" class="btn-limpiar">Limpiar</a>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+    {
+        <div class="mensaje-error">
+            @Model.MensajeError
+        </div>
+    }
+    else
+    {
+        <p class="total-pacientes">
+            Pacientes encontrados: <strong>@Model.Pacientes.Count</strong>
+        </p>
+
+        <div class="tabla-contenedor">
+            <table class="tabla-pacientes">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre completo</th>
+                        <th>DPI</th>
+                        <th>Fecha de nacimiento</th>
+                        <th>Sexo</th>
+                        <th>Teléfono</th>
+                        <th>Fecha de ingreso</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Pacientes.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="9" class="sin-resultados">
+                                No se encontraron pacientes.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var paciente in Model.Pacientes)
+                        {
+                            <tr>
+                                <td>@paciente.IdPaciente</td>
+                                <td>@paciente.Nombres @paciente.Apellidos</td>
+                                <td>@(paciente.DPI ?? "No registrado")</td>
+                                <td>@paciente.FechaNacimiento.ToString("dd/MM/yyyy")</td>
+                                <td>@paciente.Sexo</td>
+                                <td>@paciente.Telefono</td>
+                                <td>@paciente.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (paciente.Estado)
+                                    {
+                                        <span class="estado-activo">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="estado-inactivo">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-page="/EditarPaciente"
+                                    asp-route-id="@paciente.IdPaciente"
+                                       class="btn btn-sm btn-primary">
+                                           Editar
+                             </a>
+                         </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="volver-container">
+        <a href="/Dashboard" class="btn-volver">Volver al menú principal</a>
+    </div>
+</div>
+

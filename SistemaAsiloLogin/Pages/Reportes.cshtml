@@ -1,0 +1,1155 @@
+@page
+@model SistemaAsiloLogin.Pages.ReportesModel
+
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/solicitudes-citas.css"
+          asp-append-version="true" />
+
+    <style>
+        /* =========================================
+                   PANEL ADMINISTRATIVO DE REPORTES
+                   Estilos exclusivos de esta página
+                   ========================================= */
+
+        .reportes-page {
+            --rep-primary: #17365d;
+            --rep-primary-light: #244b78;
+            --rep-accent: #f97316;
+            --rep-bg: #f3f6fb;
+            --rep-text: #253247;
+            --rep-muted: #718096;
+            --rep-border: #e5eaf2;
+            --rep-green: #15803d;
+            --rep-red: #b91c1c;
+            color: var(--rep-text);
+            padding: 24px 0 40px;
+        }
+
+            .reportes-page * {
+                box-sizing: border-box;
+            }
+
+            .reportes-page .rep-header {
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+                flex-wrap: wrap;
+                padding: 30px;
+                margin-bottom: 28px;
+                border-radius: 20px;
+                color: white;
+                background: linear-gradient( 125deg, var(--rep-primary), var(--rep-primary-light) );
+                box-shadow: 0 12px 30px rgba(23, 54, 93, .15);
+            }
+
+                .reportes-page .rep-header::after {
+                    content: "";
+                    position: absolute;
+                    width: 230px;
+                    height: 230px;
+                    right: -70px;
+                    top: -100px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, .07);
+                    pointer-events: none;
+                }
+
+            .reportes-page .rep-brand {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                min-width: 0;
+                position: relative;
+                z-index: 1;
+            }
+
+            .reportes-page .rep-logo {
+                width: 88px;
+                height: 88px;
+                object-fit: contain;
+                flex-shrink: 0;
+                padding: 5px;
+                background: white;
+                border-radius: 16px;
+            }
+
+            .reportes-page .rep-eyebrow {
+                display: block;
+                margin-bottom: 7px;
+                color: #cbdcf2;
+                font-size: .75rem;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+            }
+
+            .reportes-page .rep-title {
+                margin: 0 0 8px;
+                color: white;
+                font-size: clamp(1.6rem, 3vw, 2.2rem);
+                font-weight: 800;
+            }
+
+            .reportes-page .rep-subtitle {
+                margin: 0 0 8px;
+                color: #e2eaf5;
+                font-size: .95rem;
+            }
+
+            .reportes-page .rep-date {
+                margin: 0;
+                color: #cbdcf2;
+                font-size: .83rem;
+            }
+
+            .reportes-page .rep-header-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                position: relative;
+                z-index: 1;
+            }
+
+                .reportes-page .rep-header-actions .btn {
+                    padding: 10px 16px;
+                    border-radius: 10px;
+                    font-weight: 600;
+                }
+
+            .reportes-page .rep-btn-light {
+                color: var(--rep-primary);
+                background: white;
+                border: 1px solid white;
+            }
+
+                .reportes-page .rep-btn-light:hover {
+                    color: var(--rep-primary);
+                    background: #eaf0f8;
+                }
+
+            .reportes-page .rep-btn-outline {
+                color: white;
+                border: 1px solid rgba(255,255,255,.55);
+            }
+
+                .reportes-page .rep-btn-outline:hover {
+                    color: var(--rep-primary);
+                    background: white;
+                }
+
+            .reportes-page .rep-section {
+                margin-bottom: 32px;
+            }
+
+            .reportes-page .rep-section-heading {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                flex-wrap: wrap;
+                margin-bottom: 17px;
+            }
+
+            .reportes-page .rep-section-title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin: 0;
+                color: var(--rep-primary);
+                font-size: 1.25rem;
+                font-weight: 800;
+            }
+
+            .reportes-page .rep-section-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 42px;
+                height: 42px;
+                flex-shrink: 0;
+                border-radius: 12px;
+                color: var(--rep-primary);
+                background: #e8eff9;
+                font-size: 1.2rem;
+            }
+
+            .reportes-page .rep-section-description {
+                margin: 5px 0 0 54px;
+                color: var(--rep-muted);
+                font-size: .86rem;
+            }
+
+            .reportes-page .rep-section-tag {
+                padding: 7px 12px;
+                border: 1px solid var(--rep-border);
+                border-radius: 30px;
+                color: var(--rep-muted);
+                background: white;
+                font-size: .78rem;
+                font-weight: 600;
+            }
+
+            /* Tarjetas financieras */
+
+            .reportes-page .rep-finance-card {
+                height: 100%;
+                min-height: 155px;
+                padding: 22px;
+                border: 1px solid var(--rep-border);
+                border-radius: 16px;
+                background: white;
+                box-shadow: 0 4px 15px rgba(27, 45, 75, .035);
+                transition: transform .2s ease, box-shadow .2s ease;
+            }
+
+                .reportes-page .rep-finance-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 24px rgba(27, 45, 75, .08);
+                }
+
+            .reportes-page .rep-finance-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .reportes-page .rep-finance-label {
+                margin: 0;
+                color: var(--rep-muted);
+                font-size: .87rem;
+                font-weight: 600;
+            }
+
+            .reportes-page .rep-finance-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                font-size: 1.25rem;
+            }
+
+            .reportes-page .rep-icon-blue {
+                color: #1d4ed8;
+                background: #dbeafe;
+            }
+
+            .reportes-page .rep-icon-green {
+                color: #15803d;
+                background: #dcfce7;
+            }
+
+            .reportes-page .rep-icon-red {
+                color: #b91c1c;
+                background: #fee2e2;
+            }
+
+            .reportes-page .rep-icon-orange {
+                color: #c2410c;
+                background: #ffedd5;
+            }
+
+            .reportes-page .rep-finance-value {
+                display: block;
+                overflow-wrap: anywhere;
+                margin: 0;
+                color: var(--rep-primary);
+                font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+                font-weight: 800;
+                letter-spacing: -.6px;
+            }
+
+            .reportes-page .rep-finance-card.rep-balance {
+                color: white;
+                border-color: transparent;
+                background: linear-gradient(135deg, #17365d, #28578a);
+            }
+
+            .reportes-page .rep-balance .rep-finance-label,
+            .reportes-page .rep-balance .rep-finance-value {
+                color: white;
+            }
+
+            .reportes-page .rep-balance .rep-finance-icon {
+                color: white;
+                background: rgba(255,255,255,.16);
+            }
+
+            .reportes-page .rep-finance-note {
+                display: block;
+                margin-top: 8px;
+                color: var(--rep-muted);
+                font-size: .78rem;
+            }
+
+            .reportes-page .rep-balance .rep-finance-note {
+                color: #d7e5f7;
+            }
+
+            /* Indicadores generales */
+
+            .reportes-page .rep-stat-card {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                height: 100%;
+                min-height: 112px;
+                padding: 19px;
+                border: 1px solid var(--rep-border);
+                border-radius: 15px;
+                background: white;
+                box-shadow: 0 4px 15px rgba(27, 45, 75, .035);
+                transition: transform .2s ease, box-shadow .2s ease;
+            }
+
+                .reportes-page .rep-stat-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 9px 22px rgba(27, 45, 75, .07);
+                }
+
+            .reportes-page .rep-stat-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 48px;
+                height: 48px;
+                flex-shrink: 0;
+                border-radius: 14px;
+                color: var(--rep-primary);
+                background: #edf2fa;
+                font-size: 1.3rem;
+            }
+
+            .reportes-page .rep-stat-label {
+                margin: 0 0 7px;
+                color: var(--rep-muted);
+                font-size: .82rem;
+                font-weight: 600;
+                line-height: 1.35;
+            }
+
+            .reportes-page .rep-stat-value {
+                margin: 0;
+                color: var(--rep-primary);
+                font-size: 1.75rem;
+                font-weight: 800;
+                line-height: 1.1;
+            }
+
+            .reportes-page .rep-stat-caption {
+                margin-top: 5px;
+                color: #8995a7;
+                font-size: .73rem;
+            }
+
+            .reportes-page .rep-info-banner {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 17px 20px;
+                border: 1px solid #dbe7f7;
+                border-radius: 13px;
+                background: #f5f9ff;
+                color: #52647b;
+                font-size: .85rem;
+                line-height: 1.6;
+            }
+
+                .reportes-page .rep-info-banner strong {
+                    color: var(--rep-primary);
+                }
+
+            .reportes-page .rep-footer {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding-top: 20px;
+                border-top: 1px solid var(--rep-border);
+                color: var(--rep-muted);
+                font-size: .8rem;
+            }
+
+        /* Adaptación a móviles */
+
+        @@media (max-width: 767.98px) {
+            .reportes-page {
+                padding-top: 12px;
+            }
+
+                .reportes-page .rep-header {
+                    padding: 22px;
+                    border-radius: 15px;
+                }
+
+                .reportes-page .rep-brand {
+                    align-items: flex-start;
+                    gap: 13px;
+                }
+
+                .reportes-page .rep-logo {
+                    width: 64px;
+                    height: 64px;
+                }
+
+                .reportes-page .rep-header-actions {
+                    width: 100%;
+                }
+
+                    .reportes-page .rep-header-actions .btn {
+                        flex: 1;
+                    }
+
+                .reportes-page .rep-finance-card {
+                    min-height: 140px;
+                    padding: 18px;
+                }
+
+                .reportes-page .rep-stat-card {
+                    padding: 15px;
+                }
+
+                .reportes-page .rep-stat-icon {
+                    width: 42px;
+                    height: 42px;
+                }
+
+                .reportes-page .rep-stat-value {
+                    font-size: 1.5rem;
+                }
+        }
+
+        /* Impresión y exportación mediante el navegador */
+
+        @@media print {
+            @@page {
+                size: auto;
+                margin: 12mm;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .reportes-page {
+                padding: 0 !important;
+                color: #222 !important;
+            }
+
+                .reportes-page .no-imprimir,
+                .reportes-page .rep-header-actions {
+                    display: none !important;
+                }
+
+                .reportes-page .rep-header {
+                    padding: 16px !important;
+                    margin-bottom: 20px !important;
+                    color: #17365d !important;
+                    background: white !important;
+                    border: 1px solid #17365d !important;
+                    border-radius: 8px !important;
+                    box-shadow: none !important;
+                    break-inside: avoid;
+                }
+
+                .reportes-page .rep-title,
+                .reportes-page .rep-subtitle,
+                .reportes-page .rep-date,
+                .reportes-page .rep-eyebrow {
+                    color: #17365d !important;
+                }
+
+                .reportes-page .rep-logo {
+                    width: 65px !important;
+                    height: 65px !important;
+                }
+
+                .reportes-page .rep-finance-card,
+                .reportes-page .rep-stat-card {
+                    min-height: 0 !important;
+                    padding: 12px !important;
+                    border: 1px solid #d5dbe5 !important;
+                    border-radius: 7px !important;
+                    box-shadow: none !important;
+                    break-inside: avoid;
+                }
+
+                    .reportes-page .rep-finance-card.rep-balance {
+                        color: #17365d !important;
+                        background: white !important;
+                        border: 2px solid #17365d !important;
+                    }
+
+                .reportes-page .rep-balance .rep-finance-label,
+                .reportes-page .rep-balance .rep-finance-value,
+                .reportes-page .rep-balance .rep-finance-note {
+                    color: #17365d !important;
+                }
+
+                .reportes-page .rep-section {
+                    margin-bottom: 20px !important;
+                    break-inside: auto;
+                }
+
+                .reportes-page .rep-section-heading {
+                    break-after: avoid;
+                }
+
+                .reportes-page .rep-stat-value {
+                    font-size: 16pt !important;
+                }
+
+                .reportes-page .rep-finance-value {
+                    font-size: 15pt !important;
+                }
+
+                .reportes-page .rep-stat-icon,
+                .reportes-page .rep-finance-icon,
+                .reportes-page .rep-section-icon {
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                .reportes-page .rep-info-banner {
+                    background: white !important;
+                    border: 1px solid #d5dbe5 !important;
+                }
+
+                .reportes-page .rep-footer {
+                    margin-top: 18px;
+                }
+
+                .reportes-page .row {
+                    break-inside: auto;
+                }
+
+                .reportes-page .col-md-4,
+                .reportes-page .col-md-3,
+                .reportes-page .col-sm-6 {
+                    break-inside: avoid;
+                }
+        }
+
+        /* Alinear uniformemente las tarjetas de acceso a reportes */
+.reportes-page .rep-section.no-imprimir .card .card-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+}
+
+/* Todos los botones en la esquina inferior derecha */
+.reportes-page .rep-section.no-imprimir .card .card-body > a.btn {
+    align-self: flex-end !important;
+    margin-top: auto !important;
+    flex-shrink: 0;
+}
+
+    </style>
+}
+
+<div class="container reportes-page">
+
+    <!-- ENCABEZADO -->
+    <header class="rep-header">
+        <div class="rep-brand">
+            <img src="~/images/LogoAsilo.jpg"
+                 alt="Logo del Asilo Cabeza de Algodón"
+                 class="rep-logo" />
+
+            <div>
+                <span class="rep-eyebrow">Panel administrativo</span>
+                <h1 class="rep-title">Centro de reportes</h1>
+                <p class="rep-subtitle">
+                    Asilo Cabeza de Algodón · Resumen general del sistema
+                </p>
+                <p class="rep-date">
+                    Fecha de emisión:
+                    @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                </p>
+            </div>
+        </div>
+
+      <div class="rep-header-actions no-imprimir">
+    <button type="button"
+            class="btn rep-btn-light"
+            onclick="window.print()">
+        Imprimir / PDF
+    </button>
+</div>
+    </header>
+
+   
+    <!-- ACCESO A LOS REPORTES -->
+    <section class="rep-section no-imprimir">
+        <div class="row g-3">
+
+            <!-- COBROS POR PACIENTE -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <h2 class="h5 mb-1">Cobros por paciente</h2>
+                            <p class="text-muted mb-0">
+                                Consulta cargos, cuotas, pagos y saldos por paciente y período.
+                            </p>
+                        </div>
+
+                        <a asp-page="/CobrosPacientes" class="btn btn-primary">
+                            Abrir reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTORIAL CLÍNICO -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <h2 class="h5 mb-1">Historial clínico por paciente</h2>
+                            <p class="text-muted mb-0">
+                                Consulta visitas médicas, exámenes, resultados y tratamientos por período.
+                            </p>
+                        </div>
+
+                        <a asp-page="/HistorialClinico" class="btn btn-primary">
+                            Abrir historial
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+    
+    <!-- REPORTE DE PAGOS A LA FUNDACIÓN -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-wrap
+                justify-content-between align-items-center gap-3">
+
+                <div>
+                    <h2 class="h5 mb-1">
+                        Pagos a la fundación
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Consulta pagos por fundación, fechas,
+                        montos y estados.
+                    </p>
+                </div>
+
+                <a asp-page="/ReportePagosFundacion"
+                   class="btn btn-primary">
+                    Abrir reporte
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    
+<!-- REPORTE DE DONACIONES -->
+<div class="col-md-6">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-wrap
+                    justify-content-between align-items-center gap-3">
+
+            <div>
+                <h2 class="h5 mb-1">
+                    Reporte de donaciones
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Consulta donaciones por fecha, donante,
+                    tipo y monto recibido.
+                </p>
+            </div>
+
+            <a asp-page="/ReporteDonaciones"
+               class="btn btn-primary">
+                Abrir reporte
+            </a>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- REPORTE DE CUOTAS MENSUALES -->
+<div class="col-md-6">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-wrap
+                    justify-content-between align-items-center gap-3">
+
+            <div>
+                <h2 class="h5 mb-1">
+                    Cuotas mensuales
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Consulta cuotas familiares, pagos parciales
+                    y saldos pendientes por paciente y mes.
+                </p>
+            </div>
+
+            <a asp-page="/ReporteCuotasMensuales"
+               class="btn btn-primary">
+                Abrir reporte
+            </a>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- REPORTE DE EXÁMENES Y MEDICAMENTOS -->
+<div class="col-md-6">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-wrap
+                    justify-content-between align-items-center gap-3">
+
+            <div>
+                <h2 class="h5 mb-1">
+                    Exámenes y medicamentos
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Consulta exámenes, resultados,
+                    tratamientos y entregas por paciente.
+                </p>
+            </div>
+
+            <a asp-page="/ReporteExamenesMedicamentos"
+   class="btn btn-primary">
+    Abrir reporte
+</a>
+
+        </div>
+    </div>
+</div>
+
+        </div> <!-- Cierre de la fila de reportes -->
+    </section> <!-- Cierre de la sección de accesos -->
+
+    <!-- RESUMEN FINANCIERO -->
+    <section class="rep-section">
+        <div class="rep-section-heading">
+            <div>
+                <h2 class="rep-section-title">
+                    <span class="rep-section-icon">Q</span>
+                    Resumen financiero
+                </h2>
+                <p class="rep-section-description">
+                    Estado de los movimientos registrados en caja.
+                </p>
+            </div>
+
+            <span class="rep-section-tag">Control financiero</span>
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <article class="rep-finance-card h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Ingresos de caja</p>
+                        <span class="rep-finance-icon rep-icon-green">↗</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.TotalIngresosCaja.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Movimientos de ingreso registrados
+                    </span>
+                </article>
+            </div>
+
+            <div class="col-md-4">
+                <article class="rep-finance-card h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Egresos de caja</p>
+                        <span class="rep-finance-icon rep-icon-red">↘</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.TotalEgresosCaja.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Movimientos de egreso registrados
+                    </span>
+                </article>
+            </div>
+
+            <div class="col-md-4">
+                <article class="rep-finance-card rep-balance h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Saldo de caja</p>
+                        <span class="rep-finance-icon">▣</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.SaldoCaja.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Ingresos menos egresos registrados
+                    </span>
+                </article>
+            </div>
+
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-finance-card h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Donaciones recibidas</p>
+                        <span class="rep-finance-icon rep-icon-orange">♡</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.TotalMontoDonaciones.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Monto acumulado de donaciones
+                    </span>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-finance-card h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Pagos de pacientes</p>
+                        <span class="rep-finance-icon rep-icon-blue">Q</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.TotalPagosRecibidos.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Total registrado en pagos
+                    </span>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-finance-card h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Pagos de fundación</p>
+                        <span class="rep-finance-icon rep-icon-green">✓</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.TotalPagosFundacionMonto.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Pagos registrados como realizados
+                    </span>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-finance-card h-100">
+                    <div class="rep-finance-top">
+                        <p class="rep-finance-label">Gastos registrados</p>
+                        <span class="rep-finance-icon rep-icon-red">−</span>
+                    </div>
+
+                    <p class="rep-finance-value">
+                        Q @Model.TotalMontoGastos.ToString("N2")
+                    </p>
+
+                    <span class="rep-finance-note">
+                        Monto acumulado de gastos
+                    </span>
+                </article>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ÁREA MÉDICA -->
+    <section class="rep-section">
+        <div class="rep-section-heading">
+            <div>
+                <h2 class="rep-section-title">
+                    <span class="rep-section-icon">✚</span>
+                    Área médica y pacientes
+                </h2>
+
+                <p class="rep-section-description">
+                    Indicadores de atención, personal y seguimiento médico.
+                </p>
+            </div>
+
+            <span class="rep-section-tag">Gestión médica</span>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">♙</span>
+                    <div>
+                        <p class="rep-stat-label">Pacientes</p>
+                        <p class="rep-stat-value">@Model.TotalPacientes</p>
+                        <p class="rep-stat-caption">Registros existentes</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">♧</span>
+                    <div>
+                        <p class="rep-stat-label">Familiares</p>
+                        <p class="rep-stat-value">@Model.TotalFamiliares</p>
+                        <p class="rep-stat-caption">Registros existentes</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">⚕</span>
+                    <div>
+                        <p class="rep-stat-label">Médicos</p>
+                        <p class="rep-stat-value">@Model.TotalMedicos</p>
+                        <p class="rep-stat-caption">Personal registrado</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">✚</span>
+                    <div>
+                        <p class="rep-stat-label">Enfermeros</p>
+                        <p class="rep-stat-value">@Model.TotalEnfermeros</p>
+                        <p class="rep-stat-caption">Personal registrado</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">▦</span>
+                    <div>
+                        <p class="rep-stat-label">Citas médicas</p>
+                        <p class="rep-stat-value">@Model.TotalCitas</p>
+                        <p class="rep-stat-caption">Citas registradas</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">▤</span>
+                    <div>
+                        <p class="rep-stat-label">Solicitudes médicas</p>
+                        <p class="rep-stat-value">@Model.TotalSolicitudes</p>
+                        <p class="rep-stat-caption">Solicitudes registradas</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">♡</span>
+                    <div>
+                        <p class="rep-stat-label">Visitas médicas</p>
+                        <p class="rep-stat-value">@Model.TotalVisitas</p>
+                        <p class="rep-stat-caption">Visitas registradas</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">⌕</span>
+                    <div>
+                        <p class="rep-stat-label">Exámenes de laboratorio</p>
+                        <p class="rep-stat-value">@Model.TotalExamenes</p>
+                        <p class="rep-stat-caption">Exámenes registrados</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">☷</span>
+                    <div>
+                        <p class="rep-stat-label">Resultados de exámenes</p>
+                        <p class="rep-stat-value">@Model.TotalResultados</p>
+                        <p class="rep-stat-caption">Resultados registrados</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">✚</span>
+                    <div>
+                        <p class="rep-stat-label">Tratamientos</p>
+                        <p class="rep-stat-value">@Model.TotalTratamientos</p>
+                        <p class="rep-stat-caption">Tratamientos registrados</p>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ÁREA FINANCIERA Y ADMINISTRATIVA -->
+    <section class="rep-section">
+        <div class="rep-section-heading">
+            <div>
+                <h2 class="rep-section-title">
+                    <span class="rep-section-icon">▤</span>
+                    Área financiera y administrativa
+                </h2>
+
+                <p class="rep-section-description">
+                    Control de donantes, cargos, pagos y movimientos.
+                </p>
+            </div>
+
+            <span class="rep-section-tag">Administración</span>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">♙</span>
+                    <div>
+                        <p class="rep-stat-label">Donantes</p>
+                        <p class="rep-stat-value">@Model.TotalDonantes</p>
+                        <p class="rep-stat-caption">Donantes registrados</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">♡</span>
+                    <div>
+                        <p class="rep-stat-label">Donaciones</p>
+                        <p class="rep-stat-value">@Model.TotalDonaciones</p>
+                        <p class="rep-stat-caption">Registros de donaciones</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">Q</span>
+                    <div>
+                        <p class="rep-stat-label">Cargos a pacientes</p>
+                        <p class="rep-stat-value">@Model.TotalCargos</p>
+                        <p class="rep-stat-caption">Cargos registrados</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">✓</span>
+                    <div>
+                        <p class="rep-stat-label">Pagos de pacientes</p>
+                        <p class="rep-stat-value">@Model.TotalPagosPaciente</p>
+                        <p class="rep-stat-caption">Registros de pagos</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">▣</span>
+                    <div>
+                        <p class="rep-stat-label">Cuotas familiares</p>
+                        <p class="rep-stat-value">@Model.TotalCuotas</p>
+                        <p class="rep-stat-caption">Cuotas registradas</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">Q</span>
+                    <div>
+                        <p class="rep-stat-label">Pagos de fundación</p>
+                        <p class="rep-stat-value">@Model.TotalPagosFundacion</p>
+                        <p class="rep-stat-caption">Registros de pagos</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">−</span>
+                    <div>
+                        <p class="rep-stat-label">Gastos registrados</p>
+                        <p class="rep-stat-value">@Model.TotalGastos</p>
+                        <p class="rep-stat-caption">Registros de gastos</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <article class="rep-stat-card">
+                    <span class="rep-stat-icon">⇄</span>
+                    <div>
+                        <p class="rep-stat-label">Movimientos de caja</p>
+                        <p class="rep-stat-value">@Model.TotalMovimientosCaja</p>
+                        <p class="rep-stat-caption">Movimientos registrados</p>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ACLARACIÓN DEL REPORTE -->
+    <div class="rep-info-banner">
+        <span aria-hidden="true">ⓘ</span>
+        <div>
+            <strong>Acerca de estas cifras</strong><br />
+            Los indicadores muestran registros existentes en la base de datos.
+            El saldo de caja se calcula restando los egresos registrados
+            de los ingresos registrados. Los importes de donaciones, pagos
+            y gastos se presentan por separado y no se suman nuevamente
+            al saldo de caja.
+        </div>
+    </div>
+
+    <!-- PIE DEL INFORME -->
+    <footer class="rep-footer">
+        <span>Asilo Cabeza de Algodón · Reporte administrativo</span>
+        <span>
+            Generado el @DateTime.Now.ToString("dd/MM/yyyy 'a las' HH:mm")
+        </span>
+    </footer>
+
+</div>

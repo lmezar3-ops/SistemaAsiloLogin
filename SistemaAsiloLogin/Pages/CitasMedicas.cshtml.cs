@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using SistemaAsiloLogin.Models;
 
 namespace SistemaAsiloLogin.Pages
 {
+    [Authorize(Roles = "Administrador,MedicoGeneral,Medico")]
     public class CitasMedicasModel : PageModel
     {
         private readonly AsiloDbContext _context;
@@ -29,6 +31,7 @@ namespace SistemaAsiloLogin.Pages
             Solicitudes = _context.SolicitudesMedicas
                 .Include(s => s.Paciente)
                 .Include(s => s.Especialidad)
+                 .Include(s => s.MedicoGeneral)
                 .ToList();
 
             Medicos = _context.Medicos
@@ -50,10 +53,39 @@ namespace SistemaAsiloLogin.Pages
 
         public IActionResult OnPost()
         {
-            CargarDatos();
+            // El médico y el estado no deben venir del formulario.
+            ModelState.Remove("Cita.IdMedico");
+            ModelState.Remove("Cita.Estado");
+
+            var solicitud = _context.SolicitudesMedicas
+                .Include(s => s.MedicoGeneral)
+                .FirstOrDefault(s => s.IdSolicitud == Cita.IdSolicitud);
+
+            if (solicitud == null)
+            {
+                ModelState.AddModelError(
+                    "Cita.IdSolicitud",
+                    "Debe seleccionar una solicitud médica válida.");
+            }
+            else if (solicitud.MedicoGeneral == null ||
+                     !solicitud.MedicoGeneral.Estado)
+            {
+                ModelState.AddModelError(
+                    "Cita.IdSolicitud",
+                    "El médico asignado a esta solicitud no está activo.");
+            }
+            else
+            {
+                // El médico siempre se obtiene de la solicitud.
+                Cita.IdMedico = solicitud.IdMedicoGeneral;
+            }
+
+            // Toda cita nueva comienza como Programada.
+            Cita.Estado = "Programada";
 
             if (!ModelState.IsValid)
             {
+                CargarDatos();
                 return Page();
             }
 

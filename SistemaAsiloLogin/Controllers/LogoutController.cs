@@ -10,7 +10,7 @@ namespace SistemaAsiloLogin.Controllers
         [HttpPost]
         public async Task<IActionResult> CerrarSesion()
         {
-            await HttpContext.SignOutAsync();
+            await HttpContext.SignOutAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
 
             return Ok(new
             {
@@ -19,3 +19,4 @@ namespace SistemaAsiloLogin.Controllers
         }
     }
 }
+

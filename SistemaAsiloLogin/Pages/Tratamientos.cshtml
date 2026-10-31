@@ -1,0 +1,246 @@
+
+@page
+@model SistemaAsiloLogin.Pages.TratamientosModel
+
+@{
+    ViewData["Title"] = "Tratamientos Médicos";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Tratamientos Médicos</h2>
+        <a asp-page="/VisitasMedicas" class="btn btn-outline-secondary">
+            Volver a visitas
+        </a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.MensajeErrorApi))
+    {
+        <div class="alert alert-warning">
+            @Model.MensajeErrorApi
+        </div>
+    }
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Registrar tratamiento</h5>
+        </div>
+
+        <div class="card-body">
+           <form method="post"onsubmit="if (window.jQuery && jQuery.validator && !jQuery(this).valid())
+return false; var b = this.querySelector('button[type=submit],input[type=submit]'); if (b) b.disabled = true;">
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoTratamiento.IdVisita"
+                           class="form-label">
+                        Visita médica
+                    </label>
+
+                    <select asp-for="NuevoTratamiento.IdVisita"
+                            class="form-select">
+                        <option value="">Selecciona una visita</option>
+
+                        @foreach (var visita in Model.Visitas)
+                        {
+                            <option value="@visita.IdVisita">
+                                Visita #@visita.IdVisita -
+                                @(visita.Paciente?.Nombres ?? "Paciente")
+                                @(visita.Paciente?.Apellidos ?? "") -
+                                @visita.FechaVisita.ToString("dd/MM/yyyy")
+                            </option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="NuevoTratamiento.IdVisita"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoTratamiento.IdMedicamento"
+                           class="form-label">
+                        Medicamento disponible
+                    </label>
+
+                    <select asp-for="NuevoTratamiento.IdMedicamento"
+                            class="form-select"
+                            disabled="@( !Model.Medicamentos.Any(m => m.Estado && m.Existencia > 0) )">
+                        <option value="">Selecciona un medicamento</option>
+
+                        @foreach (var medicamento in Model.Medicamentos
+                            .Where(m => m.Estado && m.Existencia > 0)
+                            .OrderBy(m => m.Nombre))
+                        {
+                            <option value="@medicamento.IdMedicamento">
+                                @medicamento.Nombre
+                                (existencias: @medicamento.Existencia)
+                            </option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="NuevoTratamiento.IdMedicamento"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NuevoTratamiento.Dosis"
+                               class="form-label">Dosis</label>
+                        <input asp-for="NuevoTratamiento.Dosis"
+                               class="form-control"
+                               maxlength="100"
+                               placeholder="Dosis indicada por el médico" />
+                        <span asp-validation-for="NuevoTratamiento.Dosis"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NuevoTratamiento.Frecuencia"
+                               class="form-label">Frecuencia</label>
+                        <input asp-for="NuevoTratamiento.Frecuencia"
+                               class="form-control"
+                               maxlength="100"
+                               placeholder="Según indicación médica" />
+                        <span asp-validation-for="NuevoTratamiento.Frecuencia"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NuevoTratamiento.Duracion"
+                               class="form-label">Duración</label>
+                        <input asp-for="NuevoTratamiento.Duracion"
+                               class="form-control"
+                               maxlength="100"
+                               placeholder="Duración indicada" />
+                        <span asp-validation-for="NuevoTratamiento.Duracion"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NuevoTratamiento.Cantidad"
+                               class="form-label">Cantidad</label>
+                        <input asp-for="NuevoTratamiento.Cantidad"
+                               class="form-control"
+                               type="number"
+                               min="1" />
+                        <span asp-validation-for="NuevoTratamiento.Cantidad"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoTratamiento.Indicaciones"
+                           class="form-label">Indicaciones adicionales</label>
+                    <textarea asp-for="NuevoTratamiento.Indicaciones"
+                              class="form-control"
+                              rows="3"
+                              maxlength="500"
+                              placeholder="Indicaciones complementarias"></textarea>
+                    <span asp-validation-for="NuevoTratamiento.Indicaciones"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary"
+                        disabled="@(!Model.Medicamentos.Any(m => m.Estado && m.Existencia > 0))">
+                    Registrar tratamiento
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">Tratamientos registrados</h5>
+        </div>
+
+        <div class="card-body table-responsive">
+            @if (Model.TratamientosRegistrados.Count == 0)
+            {
+                <p class="text-muted mb-0">
+                    Todavía no hay tratamientos registrados.
+                </p>
+            }
+            else
+            {
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Visita</th>
+                            <th>Paciente</th>
+                            <th>Medicamento</th>
+                            <th>Dosis</th>
+                            <th>Frecuencia</th>
+                            <th>Duración</th>
+                            <th>Cantidad</th>
+                            <th>Indicaciones</th>
+                            <th>Estado de entrega</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tratamiento in Model.TratamientosRegistrados)
+                        {
+                            <tr>
+                                <td>@tratamiento.IdTratamiento</td>
+                                <td>@tratamiento.IdVisita</td>
+                                <td>
+                                    @(tratamiento.VisitaMedica?.Paciente?.Nombres ?? "Paciente")
+                                    @(tratamiento.VisitaMedica?.Paciente?.Apellidos ?? "")
+                                </td>
+                                <td>
+                                    @(Model.NombresMedicamentos.TryGetValue(
+                                        tratamiento.IdMedicamento, out var nombre)
+                                        ? nombre
+                                        : $"Medicamento #{tratamiento.IdMedicamento}")
+                                </td>
+                                <td>@tratamiento.Dosis</td>
+                                <td>@tratamiento.Frecuencia</td>
+                                <td>@tratamiento.Duracion</td>
+                                <td>@tratamiento.Cantidad</td>
+                                <td>
+                                @(string.IsNullOrWhiteSpace(tratamiento.Indicaciones)
+                                  ? "Sin indicaciones adicionales"
+                                       : tratamiento.Indicaciones)
+                                </td>
+
+                                <td>
+                                    @if (tratamiento.EstadoEntrega == "ENTREGADO")
+                                    {
+                                        <span class="badge bg-success">Entregado</span>
+                                    }
+                                    else if (tratamiento.EstadoEntrega == "PENDIENTE")
+                                    {
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Sin verificar</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (tratamiento.EstadoEntrega == "PENDIENTE")
+                                    {
+                                        <form method="post" asp-page-handler="Reintentar" asp-route-idTratamiento="@tratamiento.IdTratamiento">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Reintentar entrega</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

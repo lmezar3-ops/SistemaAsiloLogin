@@ -1,0 +1,153 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.PagosFundacionModel
+
+@{
+    ViewData["Title"] = "Pagos a la Fundación";
+}
+
+<div class="container mt-4">
+    <a asp-page="/CajaPagos" class="btn btn-outline-secondary mb-3">
+    ← Volver a Caja y Pagos
+</a>
+    <h2>Pagos a la Fundación</h2>
+    <p>Registra y consulta los pagos realizados a la fundación.</p>
+
+    <hr />
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly"
+         class="alert alert-danger"></div>
+
+    <div class="card p-4 mb-4">
+        <h4>Registrar nuevo pago</h4>
+
+        <form method="post">
+            <div class="mb-3">
+                <label asp-for="Pago.IdFundacion"
+                       class="form-label">Fundación</label>
+
+                <select asp-for="Pago.IdFundacion"
+                        class="form-select"
+                        required>
+                    <option value="">Selecciona una fundación</option>
+                    @foreach (var fundacion in Model.Fundaciones)
+                    {
+                        <option value="@fundacion.IdFundacion">
+                            @fundacion.Nombre
+                        </option>
+                    }
+                </select>
+
+                <span asp-validation-for="Pago.IdFundacion"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Pago.FechaPago"
+                       class="form-label">Fecha del pago</label>
+
+                <input asp-for="Pago.FechaPago"
+                       type="date"
+                       class="form-control"
+                       required />
+
+                <span asp-validation-for="Pago.FechaPago"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Pago.Monto"
+                       class="form-label">Monto (Q)</label>
+
+                <input asp-for="Pago.Monto"
+                       type="number"
+                       class="form-control"
+                       min="0.01"
+                       step="0.01"
+                       required />
+
+                <span asp-validation-for="Pago.Monto"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Pago.Descripcion"
+                       class="form-label">Descripción</label>
+
+                <textarea asp-for="Pago.Descripcion"
+                          class="form-control"
+                          rows="3"
+                          maxlength="500"></textarea>
+
+                <span asp-validation-for="Pago.Descripcion"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Registrar pago
+            </button>
+
+            <a asp-page="/CajaPagos"
+               class="btn btn-secondary ms-2">
+                Volver a Caja y Pagos
+            </a>
+        </form>
+    </div>
+
+    <div class="card p-3 mb-4">
+        <h5>Total de pagos registrados</h5>
+        <h3>Q @Model.TotalPagos.ToString("N2")</h3>
+        <small class="text-muted">
+            Se suman los pagos con estado Pagado.
+        </small>
+    </div>
+
+    <h4>Historial de pagos</h4>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Fundación</th>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListaPagos.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            No hay pagos registrados.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var pago in Model.ListaPagos)
+                    {
+                        <tr>
+                            <td>@pago.IdPagoFundacion</td>
+                            <td>
+                                @(pago.Fundacion?.Nombre ?? "Sin fundación")
+                            </td>
+                            <td>@pago.FechaPago.ToString("dd/MM/yyyy")</td>
+                            <td>Q @pago.Monto.ToString("N2")</td>
+                            <td>@pago.Descripcion</td>
+                            <td>@pago.Estado</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

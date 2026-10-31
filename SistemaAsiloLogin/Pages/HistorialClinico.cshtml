@@ -1,0 +1,690 @@
+@page
+@model SistemaAsiloLogin.Pages.HistorialClinicoModel
+
+@{
+    ViewData["Title"] = "Historial clínico por paciente";
+}
+
+<style>
+    /* Identidad visual compartida con los reportes del asilo */
+    .historial-container {
+        max-width: 1200px;
+        margin: 24px auto 42px;
+        color: #14263d;
+    }
+    .historial-container *, .historial-container *::before, .historial-container *::after {
+        box-sizing: border-box;
+    }
+    .reporte-encabezado {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 22px;
+        padding: 24px 22px;
+        border-bottom: 4px solid #f97316;
+        border-radius: 11px;
+        background: #1e293b;
+        color: #fff;
+        margin-bottom: 18px;
+    }
+    .reporte-encabezado .reporte-institucion {
+        color: #ff9a40;
+        font-size: .73rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        margin: 0 0 9px;
+    }
+    .reporte-encabezado h1 {
+        color: #fff;
+        font-size: 1.65rem;
+        font-weight: 800;
+        margin: 0 0 7px;
+    }
+    .reporte-encabezado .reporte-subtitulo {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: .91rem;
+    }
+    .reporte-acciones {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    .reporte-boton {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 13px;
+        border: 0;
+        border-radius: 6px;
+        color: #fff !important;
+        font-size: .86rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .reporte-boton-naranja { background: #f97316; }
+    .reporte-boton-verde { background: #148454; }
+    .reporte-boton:disabled { opacity: .5; cursor: not-allowed; }
+    .reporte-boton:hover:not(:disabled) { filter: brightness(.94); }
+    .reporte-boton-consultar { background: #f97316; width: 100%; }
+    .reporte-tarjeta {
+        background: #fff;
+        border: 1px solid #d7e1ec;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 18px;
+    }
+    .reporte-tarjeta h2.reporte-titulo-filtros {
+        font-size: 1.1rem;
+        margin: 0 0 16px;
+        color: #172a43;
+        font-weight: 700;
+    }
+    .filtros {
+        display: grid;
+        grid-template-columns: minmax(240px, 1.5fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(145px, .75fr);
+        gap: 14px;
+        align-items: end;
+        margin: 0;
+    }
+    .filtro-campo { min-width: 0; position: relative; }
+    .filtros label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: .87rem;
+        color: #172a43;
+    }
+    .filtros input:not([type=hidden]) {
+        display: block;
+        width: 100%;
+        min-height: 40px;
+        padding: 9px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        color: #172a43;
+        background: #fff;
+    }
+    .reporte-filtros { position: relative; z-index: 10; overflow: visible !important; }
+    .selector-paciente { position: relative; z-index: 11; }
+    .lista-pacientes {
+        position: absolute;
+        top: calc(100% + 3px);
+        left: 0;
+        right: 0;
+        max-height: 240px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 8px 22px rgba(0,0,0,.18);
+        z-index: 1100;
+    }
+    .lista-pacientes[hidden], .opcion-paciente[hidden] { display: none !important; }
+    .opcion-paciente {
+        display: block;
+        width: 100%;
+        padding: 10px 12px;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid #eef2f6;
+        color: #172a43;
+        background: #fff;
+        cursor: pointer;
+    }
+    .opcion-paciente:hover, .opcion-paciente:focus { background: #eaf3fb; }
+    .reporte-titulo-seccion {
+        background: #1e293b;
+        border-left: 4px solid #f97316;
+        border-radius: 4px;
+        padding: 11px 13px;
+        color: #fff !important;
+        font-size: 1rem;
+        font-weight: 750;
+        margin: 0 0 13px;
+    }
+    .reporte-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .reporte-info-dato {
+        background: #eaf4fb;
+        border-radius: 6px;
+        padding: 12px;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+    .reporte-info-etiqueta {
+        display: block;
+        font-size: .8rem;
+        color: #506b88;
+        margin-bottom: 6px;
+    }
+    .reporte-info-valor {
+        display: block;
+        font-size: .92rem;
+        font-weight: 700;
+        color: #0d2c50;
+    }
+    .seccion { margin: 0 0 18px; }
+    .seccion .nota-tratamientos {
+        margin: 0 0 13px;
+        color: #52657a;
+        font-size: .88rem;
+    }
+    .tabla-contenedor { overflow-x: auto; }
+    .historial-container table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .86rem;
+        margin: 0;
+    }
+    .historial-container th, .historial-container td {
+        padding: 9px 10px;
+        text-align: left;
+        vertical-align: top;
+        border: 1px solid #d9e2ec;
+        overflow-wrap: anywhere;
+    }
+    .historial-container th {
+        color: #fff;
+        background: #1e293b;
+        font-weight: 700;
+    }
+    .historial-container tbody tr:nth-child(even) { background: #f5f8fb; }
+    .vacio { margin: 0; color: #667788; padding: 10px 0; }
+    .reporte-mensaje { margin-top: 0; }
+    @@media (max-width: 920px) {
+        .filtros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .reporte-encabezado { flex-direction: column; align-items: flex-start; }
+        .reporte-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @@media (max-width: 580px) {
+        .historial-container { margin: 12px auto 28px; }
+        .reporte-encabezado { padding: 20px 16px; }
+        .reporte-encabezado h1 { font-size: 1.35rem; }
+        .filtros, .reporte-info-grid { grid-template-columns: 1fr; }
+        .reporte-acciones { flex-wrap: wrap; }
+    }
+    @@media print {
+        @@page { size: A4 landscape; margin: 11mm; }
+        body { background: #fff !important; font-size: 9pt !important; }
+        header, footer, nav, .no-imprimir, .reporte-filtros { display: none !important; }
+        .contenido-principal, main, .container, .container-fluid {
+            width: 100% !important;
+            max-width: none !important;
+        }
+        .historial-container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .reporte-encabezado {
+            padding: 10px 12px !important;
+            margin: 0 0 10px !important;
+            border: 1px solid #17365d !important;
+            border-bottom: 2px solid #f97316 !important;
+            border-radius: 0 !important;
+            background: #fff !important;
+            color: #17365d !important;
+            break-inside: avoid;
+        }
+        .reporte-encabezado h1,
+        .reporte-encabezado .reporte-subtitulo,
+        .reporte-encabezado .reporte-institucion {
+            color: #17365d !important;
+        }
+        .reporte-encabezado h1 { font-size: 17pt !important; }
+        .reporte-tarjeta {
+            margin-bottom: 10px !important;
+            padding: 9px !important;
+            border: 1px solid #aab7c5 !important;
+            border-radius: 0 !important;
+        }
+        .reporte-info-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+        .reporte-info-dato { padding: 7px; background: #f0f4f8 !important; }
+        .reporte-titulo-seccion {
+            color: #17365d !important;
+            background: #e8eef5 !important;
+            border-left: 3px solid #f97316 !important;
+            padding: 7px !important;
+            font-size: 10pt !important;
+        }
+        .seccion { break-inside: auto !important; page-break-inside: auto !important; }
+        .tabla-contenedor { overflow: visible !important; }
+        .historial-container table { width: 100% !important; font-size: 7.6pt !important; }
+        .historial-container th, .historial-container td {
+            padding: 4px 5px !important;
+            border: 1px solid #9eacbc !important;
+            overflow-wrap: anywhere !important;
+        }
+        .historial-container th { color: #17365d !important; background: #e8eef5 !important; }
+        .historial-container thead { display: table-header-group; }
+        .historial-container tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+        .historial-container .seccion .nota-tratamientos { font-size: 8pt; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* =========================================
+   MEJORAS DE TABLAS - HISTORIAL CLÍNICO
+   ========================================= */
+
+/* Permitir desplazamiento horizontal cuando sea necesario */
+.historial-container .tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Distribución de columnas */
+.historial-container .tabla-contenedor table {
+    table-layout: auto;
+}
+
+/* Evitar encabezados partidos letra por letra */
+.historial-container .tabla-contenedor th {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    vertical-align: middle;
+}
+
+/* Texto de registros legible */
+.historial-container .tabla-contenedor td {
+    overflow-wrap: break-word;
+    word-break: normal;
+    line-height: 1.5;
+}
+
+/* Tabla de visitas médicas */
+.historial-container section.seccion:nth-of-type(1) table {
+    min-width: 850px;
+}
+
+/* Tabla de exámenes de laboratorio */
+.historial-container section.seccion:nth-of-type(2) table {
+    min-width: 1000px;
+}
+
+/* Tabla de tratamientos */
+.historial-container section.seccion:nth-of-type(3) table {
+    min-width: 1100px;
+}
+
+/* Mantener las fechas completas */
+.historial-container .tabla-contenedor td:first-child {
+    white-space: nowrap;
+}
+
+/* Ajustes exclusivos para impresión */
+@@media print {
+
+    .historial-container .tabla-contenedor table {
+        min-width: 0 !important;
+        width: 100% !important;
+        table-layout: auto !important;
+        font-size: 7pt !important;
+    }
+
+    .historial-container .tabla-contenedor th {
+        white-space: normal !important;
+        overflow-wrap: normal !important;
+        word-break: normal !important;
+    }
+
+    .historial-container .tabla-contenedor td {
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+}
+
+</style>
+
+<div class="historial-container">
+    <div class="reporte-encabezado">
+        <div>
+            <p class="reporte-institucion">Asilo Cabeza de Algodón</p>
+            <h1>Historial clínico por paciente</h1>
+            <p class="reporte-subtitulo">Consulta las visitas médicas, exámenes, resultados y tratamientos registrados.</p>
+        </div>
+        <div class="reporte-acciones no-imprimir">
+            <a asp-page="/Reportes" class="reporte-boton reporte-boton-naranja">Volver a reportes</a>
+            @if (Model.PacienteSeleccionado != null)
+            {
+                <button type="button" class="reporte-boton reporte-boton-verde" onclick="window.print()">
+                    Imprimir / Guardar PDF
+                </button>
+            }
+            else
+            {
+                <button type="button" class="reporte-boton reporte-boton-verde" disabled
+                        title="Consulta el historial de un paciente antes de imprimir">
+                    Imprimir / Guardar PDF
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="reporte-tarjeta reporte-filtros no-imprimir">
+        <h2 class="reporte-titulo-filtros">Filtros del reporte</h2>
+        <form method="get" class="filtros">
+            <div class="filtro-campo">
+                <label for="buscarPaciente">Paciente</label>
+                <div class="selector-paciente">
+                    <input type="text" id="buscarPaciente"
+                           placeholder="Escribe un nombre o apellido..."
+                           autocomplete="off" required
+                           value="@(Model.PacienteSeleccionado == null
+                               ? ""
+                               : $"{Model.PacienteSeleccionado.Nombres} {Model.PacienteSeleccionado.Apellidos}")" />
+                    <input type="hidden" asp-for="IdPaciente" />
+                    <div id="listaPacientes" class="lista-pacientes" hidden>
+                        @foreach (var paciente in Model.Pacientes)
+                        {
+                            <button type="button" class="opcion-paciente"
+                                    data-id="@paciente.IdPaciente"
+                                    data-nombre="@($"{paciente.Nombres} {paciente.Apellidos}")">
+                                @paciente.Nombres @paciente.Apellidos
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="filtro-campo">
+                <label asp-for="FechaDesde">Fecha inicial</label>
+                <input asp-for="FechaDesde" type="date" required />
+            </div>
+            <div class="filtro-campo">
+                <label asp-for="FechaHasta">Fecha final</label>
+                <input asp-for="FechaHasta" type="date" required />
+            </div>
+            <div class="filtro-campo">
+                <button type="submit" class="reporte-boton reporte-boton-consultar">Consultar historial</button>
+            </div>
+        </form>
+    </div>
+
+    <div asp-validation-summary="All" class="text-danger no-imprimir"></div>
+
+    @if (Model.PacienteSeleccionado != null)
+    {
+        <div class="reporte-tarjeta">
+            <h2 class="reporte-titulo-seccion">Información del paciente y del reporte</h2>
+            <div class="reporte-info-grid">
+                <div class="reporte-info-dato">
+                    <span class="reporte-info-etiqueta">Paciente</span>
+                    <span class="reporte-info-valor">@Model.PacienteSeleccionado.Nombres @Model.PacienteSeleccionado.Apellidos</span>
+                </div>
+                <div class="reporte-info-dato">
+                    <span class="reporte-info-etiqueta">Período consultado</span>
+                    <span class="reporte-info-valor">@Model.FechaDesde.ToString("dd/MM/yyyy") - @Model.FechaHasta.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="reporte-info-dato">
+                    <span class="reporte-info-etiqueta">Fecha de emisión</span>
+                    <span class="reporte-info-valor">@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="reporte-info-dato">
+                    <span class="reporte-info-etiqueta">Fecha de nacimiento</span>
+                    <span class="reporte-info-valor">@Model.PacienteSeleccionado.FechaNacimiento.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="reporte-info-dato">
+                    <span class="reporte-info-etiqueta">Fecha de ingreso</span>
+                    <span class="reporte-info-valor">@Model.PacienteSeleccionado.FechaIngreso.ToString("dd/MM/yyyy")</span>
+                </div>
+            </div>
+        </div>
+        <section class="seccion reporte-tarjeta">
+            <h2 class="reporte-titulo-seccion">1. Visitas médicas</h2>
+
+            @if (Model.Visitas.Count == 0)
+            {
+                <p class="vacio">No hay visitas médicas en el periodo.</p>
+            }
+            else
+            {
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Médico</th>
+                                <th>Motivo</th>
+                                <th>Diagnóstico</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var visita in Model.Visitas)
+                        {
+                            <tr>
+                                <td>@visita.FechaVisita.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @(visita.Medico == null
+                                        ? "No disponible"
+                                        : $"{visita.Medico.Nombres} {visita.Medico.Apellidos}")
+                                </td>
+                                <td>@visita.MotivoConsulta</td>
+                                <td>@visita.Diagnostico</td>
+                                <td>@visita.Observaciones</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="seccion reporte-tarjeta">
+            <h2 class="reporte-titulo-seccion">2. Exámenes de laboratorio</h2>
+
+            @if (Model.Examenes.Count == 0)
+            {
+                <p class="vacio">No hay exámenes solicitados en el periodo.</p>
+            }
+            else
+            {
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha solicitud</th>
+                                <th>Examen</th>
+                                <th>Estado</th>
+                                <th>Resultado</th>
+                                <th>Fecha resultado</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var examen in Model.Examenes)
+                        {
+                            var resultados = Model.Resultados
+                                .Where(r => r.IdExamen == examen.IdExamen)
+                                .ToList();
+
+                            <tr>
+                                <td>@examen.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                                <td>@examen.NombreExamen</td>
+                                <td>@examen.Estado</td>
+                                <td>
+                                    @if (resultados.Count == 0)
+                                    {
+                                        <span>Sin resultado registrado en el periodo</span>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var resultado in resultados)
+                                        {
+                                            <div>@resultado.Resultado</div>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @foreach (var resultado in resultados)
+                                    {
+                                        <div>@resultado.FechaResultado.ToString("dd/MM/yyyy")</div>
+                                    }
+                                </td>
+                                <td>
+                                    @foreach (var resultado in resultados)
+                                    {
+                                        <div>@resultado.Observaciones</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="seccion reporte-tarjeta">
+            <h2 class="reporte-titulo-seccion">3. Tratamientos recetados</h2>
+            <p class="nota-tratamientos">
+                Esta sección muestra tratamientos registrados durante las visitas
+                del periodo. El estado de entrega no confirma por sí solo la
+                administración del medicamento al paciente.
+            </p>
+
+            @if (Model.Tratamientos.Count == 0)
+            {
+                <p class="vacio">No hay tratamientos registrados para estas visitas.</p>
+            }
+            else
+            {
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Visita</th>
+                               <th>Medicamento</th>
+                                <th>Dosis</th>
+                                <th>Frecuencia</th>
+                                <th>Duración</th>
+                                <th>Cantidad</th>
+                                <th>Indicaciones</th>
+                                <th>Estado de entrega</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var tratamiento in Model.Tratamientos)
+                        {
+                            var visita = Model.Visitas
+                                .FirstOrDefault(v => v.IdVisita == tratamiento.IdVisita);
+
+                            <tr>
+                                <td>
+                                    @(visita == null
+                                        ? $"Visita #{tratamiento.IdVisita}"
+                                        : visita.FechaVisita.ToString("dd/MM/yyyy"))
+                                </td>
+                                <td>
+                                 @(Model.NombresMedicamentos.TryGetValue(
+                                 tratamiento.IdMedicamento,
+                                 out var nombreMedicamento)
+                                 ? nombreMedicamento
+                              : $"Medicamento #{tratamiento.IdMedicamento} (nombre no disponible)")
+                       </td>
+                                <td>@tratamiento.Dosis</td>
+                                <td>@tratamiento.Frecuencia</td>
+                                <td>@tratamiento.Duracion</td>
+                                <td>@tratamiento.Cantidad</td>
+                                <td>@tratamiento.Indicaciones</td>
+                                <td>@(string.IsNullOrWhiteSpace(tratamiento.EstadoEntrega)
+                                    ? "No especificado"
+                                    : tratamiento.EstadoEntrega)</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    }
+    else
+    {
+        <div class="reporte-tarjeta reporte-mensaje no-imprimir">
+            <p class="vacio">Selecciona un paciente y un período para consultar su historial clínico. Después podrás imprimirlo o guardarlo como PDF.</p>
+        </div>
+    }
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const buscar = document.getElementById("buscarPaciente");
+    const idPaciente = document.getElementById("IdPaciente");
+    const lista = document.getElementById("listaPacientes");
+    const opciones = Array.from(lista.querySelectorAll(".opcion-paciente"));
+
+    function normalizar(texto) {
+        return texto.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    }
+
+    function filtrar() {
+        const palabrasBuscadas = normalizar(buscar.value)
+            .split(/\s+/)
+            .filter(Boolean);
+
+        let encontrados = 0;
+
+        opciones.forEach(opcion => {
+            const palabrasNombre = normalizar(opcion.dataset.nombre)
+                .split(/\s+/);
+
+            const coincide = palabrasBuscadas.every(busqueda =>
+                palabrasNombre.some(palabra =>
+                    palabra.startsWith(busqueda)
+                )
+            );
+
+            opcion.hidden = !coincide;
+            if (coincide) encontrados++;
+        });
+
+        lista.hidden = encontrados === 0;
+    }
+
+    buscar.addEventListener("input", function () {
+        idPaciente.value = "";
+        filtrar();
+    });
+
+    buscar.addEventListener("focus", filtrar);
+
+    opciones.forEach(opcion => {
+        opcion.addEventListener("click", function () {
+            buscar.value = opcion.dataset.nombre;
+            idPaciente.value = opcion.dataset.id;
+            lista.hidden = true;
+        });
+    });
+
+    document.addEventListener("click", function (evento) {
+        if (!evento.target.closest(".selector-paciente")) {
+            lista.hidden = true;
+        }
+    });
+
+    buscar.closest("form").addEventListener("submit", function (evento) {
+        if (!idPaciente.value) {
+            evento.preventDefault();
+            buscar.setCustomValidity("Selecciona un paciente de la lista.");
+            buscar.reportValidity();
+        }
+    });
+
+    buscar.addEventListener("input", function () {
+        buscar.setCustomValidity("");
+    });
+});
+</script>

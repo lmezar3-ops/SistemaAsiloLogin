@@ -6,6 +6,9 @@
 }
 
 <div class="container mt-4">
+    <a asp-page="/CajaPagos" class="btn btn-outline-secondary mb-3">
+    ← Volver a Caja y Pagos
+</a>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -61,8 +64,8 @@
                                 <option value="@cargo.IdCargo">
                                     Cargo #@cargo.IdCargo -
                                     Paciente #@cargo.IdPaciente -
-                                    @cargo.Concepto -
-                                    Q @cargo.MontoFinal
+                                   @cargo.Concepto -
+                                   Saldo pendiente: Q @Model.SaldosCargosPendientes[cargo.IdCargo].ToString("N2")
                                 </option>
                             }
                         </select>

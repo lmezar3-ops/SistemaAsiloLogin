@@ -1,14 +1,16 @@
 
-using System.Net.Http.Json;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SistemaAsiloLogin.Data;
 using SistemaAsiloLogin.Models;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace SistemaAsiloLogin.Pages
 {
+    [Authorize(Roles = "Administrador,CajaFinanzas,Fundacion")]
     public class DonacionesModel : PageModel
     {
         private readonly AsiloDbContext _context;
@@ -83,11 +85,11 @@ namespace SistemaAsiloLogin.Pages
             // La tabla consulta la API del microservicio.
             try
             {
-                var cliente = _httpClientFactory.CreateClient();
+                var cliente = _httpClientFactory.CreateClient("Donaciones");
 
                 Donaciones = await cliente.GetFromJsonAsync
                     <List<DonacionApiDto>>(
-                        "http://localhost:8080/api/Donaciones")
+                        "api/Donaciones")
                     ?? new List<DonacionApiDto>();
             }
             catch (HttpRequestException)

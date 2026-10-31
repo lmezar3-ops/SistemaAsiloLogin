@@ -1,0 +1,101 @@
+﻿
+@page
+@model SistemaAsiloLogin.Pages.CajaPagosModel
+
+@{
+    ViewData["Title"] = "Caja y Pagos";
+}
+
+<div class="container mt-4">
+    <h2>💰 Caja y Pagos</h2>
+    <p>Administración financiera del asilo.</p>
+    <hr />
+
+    <div class="row">
+
+        @* Solo Administrador *@
+        @if (User.IsInRole("Administrador"))
+        {
+            <div class="col-md-4 mb-3">
+                <a asp-page="/MovimientosCaja"
+                   class="text-decoration-none text-dark">
+                    <div class="card h-100 p-3">
+                        <h4>📊 Movimientos de Caja</h4>
+                        <p>Consultar ingresos, egresos y saldo registrado.</p>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @* Administrador y CajaFinanzas *@
+        <div class="col-md-4 mb-3">
+            <a asp-page="/CargosPaciente"
+               class="text-decoration-none text-dark">
+                <div class="card h-100 p-3">
+                    <h4>🧾 Cargos de Pacientes</h4>
+                    <p>Registrar y consultar cargos por servicios.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <a asp-page="/CuotasFamiliares"
+               class="text-decoration-none text-dark">
+                <div class="card h-100 p-3">
+                    <h4>👨‍👩‍👧 Cuotas Familiares</h4>
+                    <p>Registrar y consultar cuotas de pacientes.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <a asp-page="/PagosPaciente"
+               class="text-decoration-none text-dark">
+                <div class="card h-100 p-3">
+                    <h4>💵 Pagos de Pacientes</h4>
+                    <p>Registrar pagos y abonos a cargos o cuotas.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <a asp-page="/EstadoCuentaPaciente"
+               class="text-decoration-none text-dark">
+                <div class="card h-100 p-3">
+                    <h4>📋 Estados de Cuenta</h4>
+                    <p>Consultar la información financiera de los pacientes.</p>
+                </div>
+            </a>
+        </div>
+
+        @* Solo Administrador *@
+        @if (User.IsInRole("Administrador"))
+        {
+            <div class="col-md-4 mb-3">
+                <a asp-page="/Gastos"
+                   class="text-decoration-none text-dark">
+                    <div class="card h-100 p-3">
+                        <h4>🛒 Gastos</h4>
+                        <p>Registrar gastos y consultar su historial.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <a asp-page="/PagosFundacion"
+                   class="text-decoration-none text-dark">
+                    <div class="card h-100 p-3">
+                        <h4>🏛️ Pagos a la Fundación</h4>
+                        <p>Registrar pagos y consultar su historial.</p>
+                    </div>
+                </a>
+            </div>
+        }
+
+    </div>
+
+    <a asp-page="/Dashboard" class="btn btn-secondary mt-3">
+        Volver al menú principal
+    </a>
+</div>
+

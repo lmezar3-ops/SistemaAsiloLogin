@@ -1,0 +1,519 @@
+﻿
+@page
+@model SistemaAsiloLogin.Pages.ReporteExamenesMedicamentosModel
+
+@{
+    ViewData["Title"] = "Reporte de exámenes y medicamentos";
+
+    bool individual = Model.PacienteSeleccionado != null;
+
+    string nombrePaciente = individual
+        ? $"{Model.PacienteSeleccionado!.Nombres} {Model.PacienteSeleccionado.Apellidos}"
+        : "Todos los pacientes";
+
+    bool imprimir = Request.Query["imprimir"].ToString() == "1";
+}
+
+<style>
+    .reporte-medico {
+        max-width: 1350px;
+        margin: 25px auto;
+        color: #1e293b;
+    }
+
+    .reporte-encabezado {
+        background: #1e293b;
+        border-bottom: 5px solid #f97316;
+        color: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 22px;
+    }
+
+    .reporte-encabezado h1 {
+        color: white;
+        font-size: 1.7rem;
+        font-weight: 800;
+    }
+
+    .reporte-institucion {
+        color: #fdba74;
+        font-weight: 700;
+        font-size: .85rem;
+        margin-bottom: 8px;
+    }
+
+    .reporte-tarjeta {
+        background: white;
+        border: 1px solid #dbe4ee;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .reporte-seccion {
+        background: #1e293b;
+        color: white;
+        border-left: 5px solid #f97316;
+        padding: 12px 15px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        border-radius: 5px;
+        margin-bottom: 16px;
+    }
+
+    .reporte-dato {
+        background: #edf6fb;
+        border-radius: 8px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .reporte-dato small {
+        color: #64748b;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .reporte-dato strong {
+        font-size: 1.05rem;
+    }
+
+    .reporte-tabla {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .reporte-tabla th {
+        background: #1e293b;
+        color: white;
+        padding: 10px;
+        border: 1px solid #334155;
+    }
+
+    .reporte-tabla td {
+        padding: 10px;
+        border: 1px solid #dbe4ee;
+        vertical-align: top;
+        overflow-wrap: anywhere;
+    }
+
+    .reporte-tabla tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    .btn-volver {
+        background: #f97316;
+        border: 1px solid #f97316;
+        color: white;
+        font-weight: 700;
+    }
+
+    .btn-volver:hover {
+        background: #ea580c;
+        color: white;
+    }
+
+    .reporte-nota {
+        border-left: 4px solid #f97316;
+        background: #fff7ed;
+        padding: 14px;
+        border-radius: 5px;
+        font-size: .85rem;
+    }
+
+    @@page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    @@media print {
+        .no-imprimir,
+        .navbar,
+        .sidebar {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        .reporte-medico {
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .reporte-encabezado,
+        .reporte-seccion,
+        .reporte-tabla th,
+        .reporte-dato {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .reporte-encabezado,
+        .reporte-tarjeta {
+            break-inside: avoid-page;
+        }
+
+        .reporte-tarjeta {
+            padding: 12px;
+        }
+
+        .reporte-tabla {
+            font-size: 10px;
+        }
+
+        .reporte-tabla th,
+        .reporte-tabla td {
+            padding: 6px;
+        }
+
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        tr {
+            break-inside: avoid;
+        }
+    }
+</style>
+
+<div class="container-fluid reporte-medico">
+
+    <!-- ENCABEZADO ÚNICO -->
+    <header class="reporte-encabezado">
+        <div class="d-flex flex-wrap justify-content-between
+                    align-items-center gap-3">
+
+            <div>
+                <div class="reporte-institucion">
+                    ASILO CABEZA DE ALGODÓN
+                </div>
+
+                <h1>
+                    Reporte de exámenes y medicamentos
+                </h1>
+
+                <p class="mb-0" style="color:#cbd5e1;">
+                    @(individual
+                        ? "Reporte individual por paciente"
+                        : "Reporte general de pacientes")
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 no-imprimir">
+                <a asp-page="/Reportes"
+                   class="btn btn-volver">
+                    Volver a reportes
+                </a>
+
+                <button type="submit"
+                        form="filtrosMedicos"
+                        name="imprimir"
+                        value="1"
+                        class="btn btn-success fw-bold">
+                    Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- FILTROS -->
+    <div class="reporte-tarjeta no-imprimir">
+        <h2 class="h5 mb-3">Filtros del reporte</h2>
+
+        <form id="filtrosMedicos" method="get" class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Paciente</label>
+
+                <select name="IdPaciente"
+                        class="form-select"
+                        onchange="this.form.requestSubmit()">
+
+                    <option value="">
+                        Todos los pacientes
+                    </option>
+
+                    @foreach (var paciente in Model.Pacientes)
+                    {
+                        if (Model.IdPaciente == paciente.IdPaciente)
+                        {
+                            <option value="@paciente.IdPaciente" selected>
+                                @paciente.Nombres @paciente.Apellidos
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@paciente.IdPaciente">
+                                @paciente.Nombres @paciente.Apellidos
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha inicial</label>
+
+                <input type="date"
+                       name="FechaDesde"
+                       class="form-control"
+                       value="@(Model.FechaDesde?.ToString("yyyy-MM-dd"))" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha final</label>
+
+                <input type="date"
+                       name="FechaHasta"
+                       class="form-control"
+                       value="@(Model.FechaHasta?.ToString("yyyy-MM-dd"))" />
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit"
+                        class="btn btn-primary w-100">
+                    Consultar
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+    else
+    {
+        <!-- INFORMACIÓN GENERAL -->
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">
+                Información del reporte
+            </h2>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <div class="reporte-dato">
+                        <small>Paciente / Alcance</small>
+                        <strong>@nombrePaciente</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="reporte-dato">
+                        <small>Período consultado</small>
+                        <strong>
+                            @Model.FechaDesde?.ToString("dd/MM/yyyy")
+                            -
+                            @Model.FechaHasta?.ToString("dd/MM/yyyy")
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="reporte-dato">
+                        <small>Fecha de emisión</small>
+                        <strong>
+                            @Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- RESUMEN -->
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">
+                Resumen de actividades médicas
+            </h2>
+
+            <div class="table-responsive">
+                <table class="reporte-tabla">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th class="text-end">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Exámenes solicitados</td>
+                            <td class="text-end">@Model.TotalExamenes</td>
+                        </tr>
+                        <tr>
+                            <td>Exámenes con resultado registrado</td>
+                            <td class="text-end">@Model.TotalConResultado</td>
+                        </tr>
+                        <tr>
+                            <td>Tratamientos recetados</td>
+                            <td class="text-end">@Model.TotalTratamientos</td>
+                        </tr>
+                        <tr>
+                            <td>Tratamientos marcados como entregados</td>
+                            <td class="text-end">@Model.TotalEntregados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- EXÁMENES -->
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">
+                Exámenes de laboratorio y resultados
+            </h2>
+
+            @if (Model.Examenes.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    No se encontraron exámenes en el período.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="reporte-tabla">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Paciente</th>
+                                <th>Fecha solicitud</th>
+                                <th>Examen</th>
+                                <th>Estado</th>
+                                <th>Resultado</th>
+                                <th>Fecha resultado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var examen in Model.Examenes)
+                            {
+                                <tr>
+                                    <td>@examen.IdExamen</td>
+                                    <td>@examen.Paciente</td>
+                                    <td>
+                                        @examen.FechaSolicitud.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>@examen.NombreExamen</td>
+                                    <td>@examen.Estado</td>
+                                    <td>
+                                        @(examen.Resultado?.Resultado
+                                            ?? "Sin resultado registrado")
+                                    </td>
+                                    <td>
+                                        @(examen.Resultado == null
+                                            ? "—"
+                                            : examen.Resultado.FechaResultado.ToString("dd/MM/yyyy"))
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <!-- MEDICAMENTOS -->
+        <section class="reporte-tarjeta">
+            <h2 class="reporte-seccion">
+                Tratamientos y medicamentos recetados
+            </h2>
+
+            @if (Model.Tratamientos.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    No se encontraron tratamientos en el período.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="reporte-tabla">
+                        <thead>
+                            <tr>
+                                <th>Tratamiento</th>
+                                <th>Paciente</th>
+                                <th>Fecha visita</th>
+                                <th>Medicamento</th>
+                                <th>Dosis</th>
+                                <th>Frecuencia</th>
+                                <th>Duración</th>
+                                <th>Cantidad</th>
+                                <th>Entrega</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var tratamiento in Model.Tratamientos)
+                            {
+                                <tr>
+                                    <td>@tratamiento.IdTratamiento</td>
+                                    <td>@tratamiento.Paciente</td>
+                                    <td>
+                                        @tratamiento.FechaVisita.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        ID @tratamiento.IdMedicamento
+                                    </td>
+                                    <td>@tratamiento.Dosis</td>
+                                    <td>@tratamiento.Frecuencia</td>
+                                    <td>@tratamiento.Duracion</td>
+                                    <td>@tratamiento.Cantidad</td>
+                                    <td>
+                                        @if (tratamiento.Entregado)
+                                        {
+                                            <strong class="text-success">
+                                                Entregado
+                                            </strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-warning-emphasis">
+                                                @tratamiento.EstadoEntrega
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <div class="reporte-nota">
+            <strong>Observaciones:</strong>
+            Los exámenes se filtran por su fecha de solicitud
+            y los tratamientos por la fecha de su visita médica.
+            Los resultados corresponden a la información disponible
+            al momento de generar este documento.
+            El estado «Entregado» identifica la entrega registrada
+            del tratamiento, no confirma su administración.
+            Los medicamentos se identifican mediante su ID
+            del catálogo.
+        </div>
+
+        <p class="text-center text-muted small mt-3">
+            Asilo Cabeza de Algodón |
+            Sistema de Administración |
+            Reporte generado automáticamente
+        </p>
+    }
+
+</div>
+
+@if (imprimir && ViewData.ModelState.IsValid)
+{
+    <script>
+        window.addEventListener("load", function () {
+            window.print();
+        });
+    </script>
+}

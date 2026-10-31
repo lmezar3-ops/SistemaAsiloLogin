@@ -5,13 +5,32 @@
     ViewData["Title"] = "Solicitudes Médicas";
 }
 
-<h2>Solicitudes Médicas</h2>
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/solicitudes-citas.css"
+          asp-append-version="true" />
+}
 
-<form method="post">
+<div class="modulo-medico">
 
-    <div class="solicitud-form">
+    <div class="modulo-encabezado">
+        <h2>Solicitudes Médicas</h2>
+        <p class="modulo-descripcion">
+            Registra y consulta las solicitudes de atención médica.
+        </p>
+    </div>
 
-        <div>
+@if (TempData["AvisoCorreo"] != null)
+{
+    <div class="alert alert-info" role="alert">
+        @TempData["AvisoCorreo"]
+    </div>
+}
+
+<form method="post" class="formulario-modulo" id="formSolicitudMedica">
+
+
+        <div class="campo-modulo">
             <label>Paciente</label>
 
             <select asp-for="Solicitud.IdPaciente">
@@ -26,7 +45,7 @@
             </select>
         </div>
 
-        <div>
+        <div class="campo-modulo">
             <label>Médico General</label>
 
             <select asp-for="Solicitud.IdMedicoGeneral">
@@ -41,7 +60,7 @@
             </select>
         </div>
 
-        <div>
+        <div class="campo-modulo">
             <label>Especialidad</label>
 
             <select asp-for="Solicitud.IdEspecialidad">
@@ -56,7 +75,7 @@
             </select>
         </div>
 
-        <div>
+        <div class="campo-modulo">
             <label>Enfermero</label>
 
             <select asp-for="Solicitud.IdEnfermero">
@@ -71,14 +90,14 @@
             </select>
         </div>
 
-        <div>
+        <div class="campo-modulo">
             <label>Fecha de solicitud</label>
 
             <input asp-for="Solicitud.FechaSolicitud"
                    type="datetime-local" />
         </div>
 
-        <div>
+        <div class="campo-modulo">
             <label>Motivo</label>
 
             <textarea asp-for="Solicitud.Motivo"
@@ -86,7 +105,7 @@
                       placeholder="Ingrese el motivo de la solicitud médica"></textarea>
         </div>
 
-        <div>
+        <div class="campo-modulo">
             <label>Estado</label>
 
             <select asp-for="Solicitud.Estado">
@@ -94,19 +113,32 @@
             </select>
         </div>
 
-        <button type="submit">
-            Registrar Solicitud
-        </button>
-
-    </div>
+     <button type="submit"
+        class="btn-modulo campo-completo"
+        id="btnRegistrarSolicitud">
+    Registrar Solicitud
+</button>
 
 </form>
 
+<script>
+    document.getElementById('formSolicitudMedica')
+        ?.addEventListener('submit', function () {
+            const boton = document.getElementById('btnRegistrarSolicitud');
 
-<h3>Solicitudes Registradas</h3>
+            if (boton) {
+                boton.disabled = true;
+                boton.textContent = 'Registrando...';
+            }
+        });
+</script>
 
-<table>
-    <thead>
+
+<h3 class="seccion-registros">Solicitudes Registradas</h3>
+
+<div class="tabla-responsive">
+    <table class="tabla-modulo">
+        <thead>
         <tr>
             <th>ID</th>
             <th>Paciente</th>
@@ -116,6 +148,7 @@
             <th>Fecha</th>
             <th>Motivo</th>
             <th>Estado</th>
+            <th>Acciones</th>
         </tr>
     </thead>
 
@@ -151,7 +184,7 @@
                         <span>Sin asignar</span>
                     }
                 </td>
-
+                
                 <td>
                     @solicitud.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")
                 </td>
@@ -160,12 +193,27 @@
                     @solicitud.Motivo
                 </td>
 
-                <td>
+                          <td>
                     @solicitud.Estado
+                </td>
+
+                <td>
+                    <form method="post"
+                          asp-page-handler="ReenviarCorreo"
+                          class="formulario-modulo">
+                        <input type="hidden"
+                               name="idSolicitud"
+                               value="@solicitud.IdSolicitud" />
+
+                        <button type="submit" class="btn-modulo">
+                            Reenviar correo
+                        </button>
+                    </form>
                 </td>
             </tr>
         }
 
     </tbody>
 </table>
-```
+</div>
+</div>

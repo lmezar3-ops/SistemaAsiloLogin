@@ -1,0 +1,82 @@
+﻿@page
+@model SistemaAsiloLogin.Pages.MovimientosCajaModel
+
+@{
+    ViewData["Title"] = "Movimientos de Caja";
+}
+
+<div class="container mt-4">
+    <a asp-page="/CajaPagos" class="btn btn-outline-secondary mb-3">
+    ← Volver a Caja y Pagos
+</a>
+    <h2>Movimientos de Caja</h2>
+    <p>Consulta de ingresos, egresos y saldo registrado.</p>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card p-3">
+                <h5>Total de ingresos</h5>
+                <h3>Q @Model.TotalIngresos.ToString("N2")</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card p-3">
+                <h5>Total de egresos</h5>
+                <h3>Q @Model.TotalEgresos.ToString("N2")</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card p-3">
+                <h5>Saldo registrado</h5>
+                <h3>Q @Model.Saldo.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Movimientos.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            No hay movimientos registrados.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var movimiento in Model.Movimientos)
+                    {
+                        <tr>
+                            <td>@movimiento.IdMovimiento</td>
+                            <td>
+                                @movimiento.FechaMovimiento.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+                            <td>@movimiento.TipoMovimiento</td>
+                            <td>@movimiento.Concepto</td>
+                            <td>Q @movimiento.Monto.ToString("N2")</td>
+                            <td>@movimiento.Estado</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <a asp-page="/Dashboard" class="btn btn-secondary">
+        Volver al menú principal
+    </a>
+</div>
